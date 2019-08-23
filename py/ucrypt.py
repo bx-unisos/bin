@@ -298,7 +298,8 @@ class examples(icm.Cmnd):
 
 ####+END:
         def cpsInit(): return collections.OrderedDict()
-        def menuItem(): icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='little')
+        def menuItemVerbose(): icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='little')
+        def menuItem(): icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')            
         def execLineEx(cmndStr): icm.ex_gExecMenuItem(execLine=cmndStr)
 
         logControler = icm.LOG_Control()
@@ -330,12 +331,16 @@ class examples(icm.Cmnd):
 """
 ####+END:
 
-        icm.cmndExampleMenuChapter('*User Encrypt (ucrypt)*')
+        icm.cmndExampleMenuChapter('*Local Encrypt (lencrypt)*')
 
         cmndName = "genkey"
+
+        cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
         
-        cmndArgs = ""; cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
-        menuItem()
+        cmndArgs = ""; menuItem()
+
+        cmndArgs = "hex"; menuItem()        
+
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
  
@@ -377,14 +382,15 @@ class examples(icm.Cmnd):
 """
 ####+END:
 
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genkey" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "1" :asFunc "" :interactiveP ""
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genkey" :comment "" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "4" :asFunc "" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genkey/ parsMand= parsOpt= argsMin=0 argsMax=1 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genkey/ parsMand= parsOpt= argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
 """
 class genkey(icm.Cmnd):
     cmndParamsMandatory = [ ]
     cmndParamsOptional = [ ]
-    cmndArgsLen = {'Min': 0, 'Max': 1,}
+    cmndArgsLen = {'Min': 0, 'Max': 4,}
 
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def cmnd(self,
@@ -407,35 +413,89 @@ class genkey(icm.Cmnd):
         if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
             return cmndOutcome
 ####+END:
+        choices = self.cmndArgsGet("0&4", cmndArgsSpecDict, effectiveArgsList)
 
-        myName=self.myName()
-        thisOutcome = icm.OpOutcome(invokerName=myName)
+        allChoices=False
+        if choices[0] == "all":
+            allChoices=True        
+            cmndArgsSpec = cmndArgsSpecDict.argPositionFind("0&4")
+            argChoices = cmndArgsSpec.argChoicesGet()
+            argChoices.pop(0)
+            choices = argChoices
 
-        #print G.icmInfo
 
-        for eachArg in effectiveArgsList:
-            icm.ANN_here("{}".format(eachArg))
-
-        #print (icm.__file__)
-        #print sys.path
+        opResult = list()
+        opError = icm.OpError.Success
+        
+        def processEachResult(eachChoice, eachResult):
+            opResult.append(eachResult)
+            if interactive:
+                separator = ""
+                choiceString = ""
+                if allChoices:
+                    separator = ":"
+                    choiceString = eachChoice
+                print("""{eachChoice}{separator}{eachResult}"""
+                      .format(eachChoice=choiceString, separator=separator, eachResult=eachResult))
 
         # Generate an AES key, 128 bits long
         key = AESGCM.generate_key(bit_length=128)
         keyhex = binascii.hexlify(key)
-        # Print the key
-        print("HEX")
-        print(keyhex)
-        print(keyhex.decode('utf-8'))
-        print("base64")
-        print(base64.b64encode(key))
-        # we will also print the base64url version which uses a few different 
-        # characters so it can be used in an HTTP URL safely
-        # '+' replaced by '-' and  '/'  replaced by '_' 
-        # The padding characters == are sometime left off base64url
-        print("base64url")
-        print(base64.urlsafe_b64encode(key))
-    
-        return thisOutcome
+        
+        for eachChoice in choices:
+            if eachChoice == "hex":
+                eachResult = keyhex
+                processEachResult(eachChoice, eachResult)
+                
+            elif eachChoice == "utf-8":
+                eachResult = keyhex.decode('utf-8')
+                processEachResult(eachChoice, eachResult)
+                
+            elif eachChoice == "base64":
+                eachResult = base64.b64encode(key)
+                processEachResult(eachChoice, eachResult)
+
+            elif eachChoice == "base64url":
+                # we will also print the base64url version which uses a few different 
+                # characters so it can be used in an HTTP URL safely
+                # '+' replaced by '-' and  '/'  replaced by '_' 
+                # The padding characters == are sometime left off base64url
+
+                eachResult = base64.urlsafe_b64encode(key)
+                processEachResult(eachChoice, eachResult)
+                
+            else:
+                icm.EH_problem_usageError(
+                """Bad Choice: {eachChoice}"""
+                    .format(eachChoice=eachChoice,))
+                opError = icm.OpError.Fail
+
+                
+        return cmndOutcome.set(
+            opError=opError,
+            opResults=opResult,
+        )
+
+####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndArgsSpec/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndArgsSpec(self):
+####+END:        
+        """
+***** Cmnd Args Specification
+"""
+        cmndArgsSpecDict = icm.CmndArgsSpecDict()
+        cmndArgsSpecDict.argsDictAdd(
+            argPosition="0&4",
+            argName="choices",
+            argDefault='all',
+            argChoices=['all', 'hex', 'utf-8', 'base64', 'base64url',],
+            argDescription="Output formats.",
+        )
+
+        return cmndArgsSpecDict
 
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -446,9 +506,11 @@ class genkey(icm.Cmnd):
     def cmndDocStr(self):
 ####+END:        
         return """
-***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
+Creates a 
 """
 
+
+    
 
 ####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "storePlus" :comment "" :parsMand "" :parsOpt "" :argsMin "3" :argsMax "3" :asFunc "" :interactiveP ""
 """
