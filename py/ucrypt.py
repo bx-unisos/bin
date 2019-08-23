@@ -67,7 +67,7 @@ import sys
 
 import collections
 
-from unisos import ucf
+#from unisos import ucf
 from unisos import icm
 
 from blee.icmPlayer import bleep
@@ -264,17 +264,6 @@ def g_argsExtraSpecify(
         argparseLongOpt='--version',
     )
 
-    icmParams.parDictAdd(
-        parName='pkgSrc',
-        parDescription="Package Source",
-        parDataType=None,
-        parDefault=None,
-        parChoices=list(),
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--pkgSrc',
-    )
-
     bleep.commonParamsSpecify(icmParams)    
        
     icm.argsparseBasedOnIcmParams(parser, icmParams)
@@ -321,19 +310,35 @@ class examples(icm.Cmnd):
 
         bleep.examples_icmBasic()
         
-####+BEGIN: bx:icm:python:cmnd:subSection :title "Dev And Testing"
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Keyring Plus"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Dev And Testing*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Keyring Plus*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
-        icm.cmndExampleMenuChapter('*General Dev and Testing IIFs*')
+        icm.cmndExampleMenuChapter('*Keyring Plus*')
 
-        cmndName = "unitTest"
+        cmndName = "storePlus"
         
         cmndArgs = ""; cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
         menuItem()
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "User Encrypt (ucrypt)"
+        """
+**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *User Encrypt (ucrypt)*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        icm.cmndExampleMenuChapter('*User Encrypt (ucrypt)*')
+
+        cmndName = "genkey"
+        
+        cmndArgs = ""; cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
+        menuItem()
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+ 
 
         
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
