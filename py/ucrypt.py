@@ -23,7 +23,7 @@ __icmName__ = "ex1"
 ####+END:
 
 ####+BEGIN: bx:global:timestamp:version-py :style "date"
-__version__ = "201908220527"
+__version__ = "201908223851"
 ####+END:
 
 ####+BEGIN: bx:global:icm:status-py :status "Production"
@@ -75,6 +75,19 @@ from blee.icmPlayer import bleep
 g_importedCmnds = {        # Enumerate modules from which CMNDs become invokable
     'bleep': bleep.__file__,
 }
+
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import binascii
+import base64
+
+import json
+import keyring
+import getpass
+
+#from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+#import binascii
+import os
+
 
 ####+BEGIN: bx:icm:python:section :title "= =Framework::= ICM  Description (Overview) ="
 """
@@ -359,11 +372,11 @@ class examples(icm.Cmnd):
 """
 ####+END:
 
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "unitTest" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "1" :asFunc "" :interactiveP ""
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genkey" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "1" :asFunc "" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /unitTest/ parsMand= parsOpt= argsMin=0 argsMax=1 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genkey/ parsMand= parsOpt= argsMin=0 argsMax=1 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
 """
-class unitTest(icm.Cmnd):
+class genkey(icm.Cmnd):
     cmndParamsMandatory = [ ]
     cmndParamsOptional = [ ]
     cmndArgsLen = {'Min': 0, 'Max': 1,}
@@ -393,31 +406,167 @@ class unitTest(icm.Cmnd):
         myName=self.myName()
         thisOutcome = icm.OpOutcome(invokerName=myName)
 
-        print G.icmInfo
+        #print G.icmInfo
 
         for eachArg in effectiveArgsList:
             icm.ANN_here("{}".format(eachArg))
 
-        print (icm.__file__)
-        print sys.path
+        #print (icm.__file__)
+        #print sys.path
 
-        import imp
-        print(imp.find_module('unisos/icm'))
-
-        @ucf.runOnceOnly
-        def echo(str):
-            print str
-            
-        echo("first")
-        echo("second")  # Should not run
+        # Generate an AES key, 128 bits long
+        key = AESGCM.generate_key(bit_length=128)
+        keyhex = binascii.hexlify(key)
+        # Print the key
+        print("HEX")
+        print(keyhex)
+        print(keyhex.decode('utf-8'))
+        print("base64")
+        print(base64.b64encode(key))
+        # we will also print the base64url version which uses a few different 
+        # characters so it can be used in an HTTP URL safely
+        # '+' replaced by '-' and  '/'  replaced by '_' 
+        # The padding characters == are sometime left off base64url
+        print("base64url")
+        print(base64.urlsafe_b64encode(key))
     
         return thisOutcome
-    
-    def cmndDocStr(self): return """
-** Place holder for ICM's experimental or test code.  [[elisp:(org-cycle)][| ]]
- You can use this Cmnd for rapid prototyping and testing of newly developed functions.
+
+
+####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
+####+END:        
+        return """
+***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
 """
 
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "storePlus" :comment "" :parsMand "" :parsOpt "" :argsMin "3" :argsMax "3" :asFunc "" :interactiveP ""
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /storePlus/ parsMand= parsOpt= argsMin=3 argsMax=3 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+"""
+class storePlus(icm.Cmnd):
+    cmndParamsMandatory = [ ]
+    cmndParamsOptional = [ ]
+    cmndArgsLen = {'Min': 3, 'Max': 3,}
+
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmnd(self,
+        interactive=False,        # Can also be called non-interactively
+        argsList=[],         # or Args-Input
+    ):
+        cmndOutcome = self.getOpOutcome()
+        if interactive:
+            if not self.cmndLineValidate(outcome=cmndOutcome):
+                return cmndOutcome
+            effectiveArgsList = G.icmRunArgsGet().cmndArgs
+        else:
+            effectiveArgsList = argsList
+
+        callParamsDict = {}
+        if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
+            return cmndOutcome
+
+        cmndArgsSpecDict = self.cmndArgsSpec()
+        if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
+            return cmndOutcome
+####+END:
+        #action = self.cmndArgsGet("0", cmndArgsSpecDict, effectiveArgsList)
+        #print(action)
+
+        actionPars = self.cmndArgsGet("0&3", cmndArgsSpecDict, effectiveArgsList)        
+        print(actionPars)
+        
+        for each in actionPars:
+            print(each)
+
+#         outcome = icm.subProc_bash("""\
+# {action}  {argsList}"""
+#                                    .format(action=action, argsList=" ".join(actionPars))
+#         ).log()
+#         if outcome.isProblematic(): return(icm.EH_badOutcome(outcome))
+
+
+
+        # Read in the config file
+        with open('myconfig.json') as file_config:
+            config_vars = json.loads(file_config.read())
+
+        # yes we are reading a hard coded key from a config file
+        # this is done in addition to the encryption provided by the system keyring
+        # it is so that other processes cannot just read the stored credential/password
+        key_forsecrets = None
+        service_name = None
+        user_name = None
+        key_forsecrets = config_vars['key_forsecrets']
+        service_name = config_vars['service_name']
+        user_name = config_vars['user_name']
+        # user_name = config_vars['jvgitlab_token']
+
+        # Prompt for password
+        secret = getpass.getpass()
+        # We are insecurely printing out the password here
+        print("Storing password:[" + secret + "]")
+
+        # encrypt the secret using AES-GCM
+
+        encrypted_secret = None
+        # Generate a random Nonce 12 bytes long
+        nonce = os.urandom(12)
+        aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
+        extra_associated_data = None
+        secret_bytes = secret.encode('utf-8')  # string to bytes
+        encrypted_secret = aesgcm.encrypt(nonce, secret_bytes, extra_associated_data)
+        # encrypted_secret has cipher text + a 16 byte tag appended to the end
+
+        # We will prepend the nonce and turn to hex and decode from bytes to string
+        encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
+
+        print("nonce= [" + str(binascii.hexlify(nonce)) + "]")
+        print("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
+        print("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
+
+        # store the password in the encrypted system keyring
+        keyring.set_password(service_name, user_name, str(encrypted_secret_withnonce_hex))
+
+        return cmndOutcome.set(
+            opError=icm.OpError.Success,
+            opResults=None,
+        )
+
+####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndArgsSpec/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndArgsSpec(self):
+####+END:        
+        """
+***** Cmnd Args Specification
+      """
+        cmndArgsSpecDict = icm.CmndArgsSpecDict()
+        cmndArgsSpecDict.argsDictAdd(
+            argPosition="0",
+            argName="action",
+            argChoices=[],
+            argDescription="Action to be specified by rest"
+        )
+
+        return cmndArgsSpecDict
+
+
+####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+####+END:        
+        return """
+***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
+"""
+
+    
+    
 
     
 
