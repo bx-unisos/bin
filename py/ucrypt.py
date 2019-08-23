@@ -343,7 +343,51 @@ class examples(icm.Cmnd):
 
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
- 
+        
+        cmndName = "createApplicabilityKey"
+
+        cps = cpsInit() ; cps['applicabilityDomain'] = "keyringPlus"
+        
+        cmndArgs = ""; menuItem()
+
+        cps['keyringPolicy'] = "same" ; cps['baseDir'] = "~" ; menuItem()        
+
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Encrypt"
+        """
+**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Encrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        icm.cmndExampleMenuSection('*Encrypt*')
+        
+        cmndName = "encrypt"
+
+        cps = cpsInit() 
+        
+        cmndArgs = "clearText"; menuItem()
+
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Decrypt"
+        """
+**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Decrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        icm.cmndExampleMenuSection('*decrypt*')
+        
+        cmndName = "decrypt"
+
+        cps = cpsInit() 
+        
+        cmndArgs = "cipherText"; menuItem()
+
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+        
 
         
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
@@ -598,16 +642,11 @@ class encrypt(icm.Cmnd):
         if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
             return cmndOutcome
 ####+END:
-        actions = self.cmndArgsGet("0&4", cmndArgsSpecDict, effectiveArgsList)
-        if actions[0] == "all":
-            cmndArgsSpec = cmndArgsSpecDict.argPositionFind("0&4")
-            argChoices = cmndArgsSpec.argChoicesGet()
-            argChoices.pop(0)
-            actions = argChoices
-        for each in actions:
+        args = self.cmndArgsGet("0&1", cmndArgsSpecDict, effectiveArgsList)
+
+        for each in args:
             if interactive:
-                exec("""retVal = {}()""".format(each))                                
-                print("""{each}={retVal}""".format(each=each, retVal=retVal))
+                print("""{each}={retVal}""".format(each=each, retVal=each))
                 
         return cmndOutcome.set(
             opError=icm.OpError.Success,
@@ -615,16 +654,20 @@ class encrypt(icm.Cmnd):
         )
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndArgsSpec/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndArgsSpec(self):
 ####+END:        
         """
 ***** Cmnd Args Specification
 """
         cmndArgsSpecDict = icm.CmndArgsSpecDict()
         cmndArgsSpecDict.argsDictAdd(
-            argPosition="0&4",
-            argName="clearText
-",
-            argDefault='all',
+            argPosition="0",
+            argName="clearText",
+            argDefault=None,
             argChoices=[ ],
             argDescription="Exec all or those specified as functions.",
         )
@@ -633,12 +676,93 @@ class encrypt(icm.Cmnd):
 
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
 ####+END:        
         return """
 ***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
 """
 
-    
+
+
+
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "decrypt" :comment "" :parsMand "" :parsOpt "" :argsMin "1" :argsMax "1" :asFunc "" :interactiveP ""
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /decrypt/ parsMand= parsOpt= argsMin=1 argsMax=1 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+"""
+class decrypt(icm.Cmnd):
+    cmndParamsMandatory = [ ]
+    cmndParamsOptional = [ ]
+    cmndArgsLen = {'Min': 1, 'Max': 1,}
+
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmnd(self,
+        interactive=False,        # Can also be called non-interactively
+        argsList=[],         # or Args-Input
+    ):
+        cmndOutcome = self.getOpOutcome()
+        if interactive:
+            if not self.cmndLineValidate(outcome=cmndOutcome):
+                return cmndOutcome
+            effectiveArgsList = G.icmRunArgsGet().cmndArgs
+        else:
+            effectiveArgsList = argsList
+
+        callParamsDict = {}
+        if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
+            return cmndOutcome
+
+        cmndArgsSpecDict = self.cmndArgsSpec()
+        if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
+            return cmndOutcome
+####+END:
+        args = self.cmndArgsGet("0&1", cmndArgsSpecDict, effectiveArgsList)
+
+        for each in args:
+            if interactive:
+                print("""{each}={retVal}""".format(each=each, retVal=each))
+                
+        return cmndOutcome.set(
+            opError=icm.OpError.Success,
+            opResults=None,
+        )
+
+####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndArgsSpec/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndArgsSpec(self):
+####+END:        
+        """
+***** Cmnd Args Specification
+"""
+        cmndArgsSpecDict = icm.CmndArgsSpecDict()
+        cmndArgsSpecDict.argsDictAdd(
+            argPosition="0",
+            argName="cipherText",
+            argDefault=None,
+            argChoices=[ ],
+            argDescription="Exec all or those specified as functions.",
+        )
+
+        return cmndArgsSpecDict
+
+
+####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
+####+END:        
+        return """
+***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
+"""
 
     
 ####+BEGIN: bx:icm:python:section :title "ICM-Commands: keyringPlus"
@@ -646,8 +770,6 @@ class encrypt(icm.Cmnd):
 *  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: keyringPlus*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
-    
-
     
 
 ####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "storePlus" :comment "" :parsMand "" :parsOpt "" :argsMin "3" :argsMax "3" :asFunc "" :interactiveP ""
@@ -771,18 +893,12 @@ class storePlus(icm.Cmnd):
 """
 
     
-    
-
-    
 
 ####+BEGIN: bx:icm:python:section :title "Supporting Classes And Functions"
 """
 *  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *Supporting Classes And Functions*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
-"""
-*       /Empty/  [[elisp:(org-cycle)][| ]]
-"""
 
 ####+BEGIN: bx:dblock:python:class :className "SymetricEncrypt" :superClass "" :comment "" :classType "basic"
 """
@@ -806,7 +922,7 @@ class SymetricEncrypt(object):
         baseDir=None,
     ):
 ####+END:        
-    pass
+        pass
 
 ####+BEGIN: bx:icm:python:method :methodName "createApplicabilityDomain" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyringPolicy=None"
     """
