@@ -1068,10 +1068,10 @@ class decrypt(icm.Cmnd):
                     cipherText = cipherText + each
                 
             elif inFile:
-                clearText = readFromFile(inFile)
+                cipherText = readFromFile(inFile)
             else:
                 # Stdin then
-                clearText = readFromStdin()
+                cipherText = readFromStdin()
 
         if interactive:
             print("""clearText={clearText}""".format(clearText=clearText))
@@ -1642,9 +1642,11 @@ class EncryptionContext(object):
             print(keyPath)
             with open(keyPath, 'r') as thisFile:
                 clearKey = thisFile.read()
-            return clearKey
 
-        print(self.alg)
+        print(clearKey)                
+        return clearKey
+
+        
 
 ####+BEGIN: bx:icm:python:method :methodName "encrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "clearText"
     """
@@ -1710,19 +1712,17 @@ class EncryptionContext(object):
 """
         print("Decrypting")
 
-        key_forsecrets = config_vars['key_forsecrets']
+        key_forsecrets = self.contextKeyGet()
 
-        encrypted_secret = None
-        encrypted_secret = keyring.get_password(service_name, user_name)
-        if encrypted_secret is None:
-            print("No encrypted_secret")
-        else:
-            print("encrypted_secret:[" + encrypted_secret + "]")
+        print(cypherText)
+        
+        encrypted_secret = cypherText.strip()
 
         # get the bytes instead of hex string
-        encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
+        #encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
+        encrypted_secret_bytes = encrypted_secret.decode('hex')
 
-        # we should receive 16 bytes nonce + encrypted data + 12 byte tag
+        # we should receive 12 bytes nonce + encrypted data + 16 byte tag
         # Grab the 12 byte Nonce at the beginning
         nonce = encrypted_secret_bytes[:12]
 
@@ -1738,10 +1738,9 @@ class EncryptionContext(object):
         aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
         secret_bytes = aesgcm.decrypt(nonce, encrypted_secret_bytes_plustag, extra_associated_data)
 
+        print(secret_bytes)
         
         return
-    
-
     
 
     
