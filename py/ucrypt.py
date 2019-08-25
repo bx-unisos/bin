@@ -1709,6 +1709,36 @@ class EncryptionContext(object):
  - decrypt with that key
 """
         print("Decrypting")
+
+        key_forsecrets = config_vars['key_forsecrets']
+
+        encrypted_secret = None
+        encrypted_secret = keyring.get_password(service_name, user_name)
+        if encrypted_secret is None:
+            print("No encrypted_secret")
+        else:
+            print("encrypted_secret:[" + encrypted_secret + "]")
+
+        # get the bytes instead of hex string
+        encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
+
+        # we should receive 16 bytes nonce + encrypted data + 12 byte tag
+        # Grab the 12 byte Nonce at the beginning
+        nonce = encrypted_secret_bytes[:12]
+
+
+        # Grab the the 16 byte tag at the end (but we don't need it)
+        # tag = encrypted_secret_bytes[-16:]
+        # if we wanted just the ciphertext
+        # just_ciphertext = encrypted_secret_bytes[12:-16]
+
+        # skip the first 12 bytes where the Nonce is
+        encrypted_secret_bytes_plustag = encrypted_secret_bytes[12:]
+        extra_associated_data = None
+        aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
+        secret_bytes = aesgcm.decrypt(nonce, encrypted_secret_bytes_plustag, extra_associated_data)
+
+        
         return
     
 
