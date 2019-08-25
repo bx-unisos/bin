@@ -89,6 +89,8 @@ import getpass
 import os
 import errno
 
+import cPickle
+
 ####+BEGIN: bx:icm:python:section :title "= =Framework::= ICM  Description (Overview) ="
 """
 *  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *= =Framework::= ICM  Description (Overview) =*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
@@ -413,7 +415,7 @@ class examples(icm.Cmnd):
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Create Encryption Context"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Encrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Create Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
@@ -461,6 +463,16 @@ class examples(icm.Cmnd):
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
         thisBlock()
 
+        def setRsrc(cps):
+            cps['rsrc'] = "context/weak";        
+
+        def thisBlock():
+            icmWrapper = "echo HereComes Some ClearText | "
+            cps = cpsInit();  setRsrc(cps); cmndArgs = ""
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
+        thisBlock()
+            
+
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Decrypt"
         """
 **  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Decrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
@@ -476,9 +488,15 @@ class examples(icm.Cmnd):
         cmndArgs = "cipherText"; menuItem()
 
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+        def thisBlock():
+            cipherText = "7a1970f49aaaa4bc87df73fba2fc7be29df519a0b7a7c529225409cb3477330ce119b0e1850422e1c61a436d2d7990f22da729dfe1"
+            icmWrapper = """echo {cipherText} | """.format(cipherText=cipherText)
+            cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = ""
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
+        thisBlock()
         
 
-        
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
         """
 **  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Remain In Sycn With Template*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
@@ -687,6 +705,8 @@ class createEncryptionContext(icm.Cmnd):
         
         opError = ucrypt.contextKeyCreate()
 
+        ucrypt.save()        
+
         return cmndOutcome.set(
             opError=opError,
             opResults=None,
@@ -748,7 +768,7 @@ class encrypt(icm.Cmnd):
                 msgAsList.append(str(line))
                 
             return (
-                "".join(msgAsList),
+                str("".join(msgAsList),)
             )
             
         def readFromFile(fileName):
@@ -772,7 +792,17 @@ class encrypt(icm.Cmnd):
 
         if interactive:
             print("""clearText={clearText}""".format(clearText=clearText))
-            print("""rsrc={rsrc}""".format(rsrc=rsrc))            
+            print("""rsrc={rsrc}""".format(rsrc=rsrc))
+
+        context=os.path.basename(rsrc)
+            
+        ucrypt = EncryptionContext(
+            contextDomain= context,
+        )
+
+        ucrypt.load()
+
+        ucrypt.encrypt(clearText)        
                 
         return cmndOutcome.set(
             opError=icm.OpError.Success,
@@ -813,22 +843,22 @@ class encrypt(icm.Cmnd):
 """
 
 
-
-
-
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "decrypt" :comment "" :parsMand "" :parsOpt "" :argsMin "1" :argsMax "1" :asFunc "" :interactiveP ""
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "decrypt" :comment "Input is arg1 or inFile or stdin" :parsMand "rsrc" :parsOpt "inFile" :argsMin "0" :argsMax "1" :asFunc "cipherText" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /decrypt/ parsMand= parsOpt= argsMin=1 argsMax=1 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /decrypt/ =Input is arg1 or inFile or stdin= parsMand=rsrc parsOpt=inFile argsMin=0 argsMax=1 asFunc=cipherText interactive=  [[elisp:(org-cycle)][| ]]
 """
 class decrypt(icm.Cmnd):
-    cmndParamsMandatory = [ ]
-    cmndParamsOptional = [ ]
-    cmndArgsLen = {'Min': 1, 'Max': 1,}
+    cmndParamsMandatory = [ 'rsrc', ]
+    cmndParamsOptional = [ 'inFile', ]
+    cmndArgsLen = {'Min': 0, 'Max': 1,}
 
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def cmnd(self,
         interactive=False,        # Can also be called non-interactively
+        rsrc=None,         # or Cmnd-Input
+        inFile=None,         # or Cmnd-Input
         argsList=[],         # or Args-Input
+        cipherText=None,         # asFunc when interactive==False
     ):
         cmndOutcome = self.getOpOutcome()
         if interactive:
@@ -838,19 +868,60 @@ class decrypt(icm.Cmnd):
         else:
             effectiveArgsList = argsList
 
-        callParamsDict = {}
+        callParamsDict = {'rsrc': rsrc, 'inFile': inFile, }
         if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
             return cmndOutcome
+        rsrc = callParamsDict['rsrc']
+        inFile = callParamsDict['inFile']
 
         cmndArgsSpecDict = self.cmndArgsSpec()
         if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
             return cmndOutcome
 ####+END:
-        args = self.cmndArgsGet("0&1", cmndArgsSpecDict, effectiveArgsList)
 
-        for each in args:
-            if interactive:
-                print("""{each}={retVal}""".format(each=each, retVal=each))
+        def readFromStdin():
+            """Reads stdin. Returns a string. -- Uses mutable list."""
+    
+            msgAsList = []
+            for line in sys.stdin:
+                msgAsList.append(str(line))
+                
+            return (
+                str("".join(msgAsList),)
+            )
+            
+        def readFromFile(fileName):
+                """Reads file. Returns an email msg object.  -- Uses mutable list."""
+                
+                return (
+                    open(fileName, 'r').read()
+                )
+        
+        if not cipherText:
+            clearText = ""
+            if effectiveArgsList:
+                for each in effectiveArgsList:
+                    cipherText = cipherText + each
+                
+            elif inFile:
+                clearText = readFromFile(inFile)
+            else:
+                # Stdin then
+                clearText = readFromStdin()
+
+        if interactive:
+            print("""clearText={clearText}""".format(clearText=clearText))
+            print("""rsrc={rsrc}""".format(rsrc=rsrc))
+
+        context=os.path.basename(rsrc)
+            
+        ucrypt = EncryptionContext(
+            contextDomain= context,
+        )
+
+        ucrypt.load()
+
+        ucrypt.decrypt(cipherText)        
                 
         return cmndOutcome.set(
             opError=icm.OpError.Success,
@@ -1078,11 +1149,39 @@ class EncryptionContext(object):
             keyPath =  os.path.join(contextPath, "clearKey")
         else:
             keyPath =  os.path.join(contextPath, "encryptedKey")
+
+        pickleFile =  os.path.join(contextPath, "EncryptionContext.pickle")
             
         self.contextPath = contextPath
         self.contextDomain = contextDomain
         self.alg = alg
-        self.keyPath = keyPath        
+        self.keyPath = keyPath
+        self.pickleFile = pickleFile
+        
+
+####+BEGIN: bx:icm:python:method :methodName "load" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /load/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def load(self):
+####+END:        
+        f = open(self.pickleFile, 'rb')
+        tmp_dict = cPickle.load(f)
+        f.close()          
+
+        self.__dict__.update(tmp_dict) 
+
+####+BEGIN: bx:icm:python:method :methodName "save" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /save/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def save(self):
+####+END:        
+        f = open(self.pickleFile, 'wb')
+        cPickle.dump(self.__dict__, f, 2)
+        f.close()        
 
 
 ####+BEGIN: bx:icm:python:method :methodName "_contextPasswdCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyringPolicy=None passwd=None"
@@ -1344,19 +1443,20 @@ class EncryptionContext(object):
             return
 
         keyPath = self.keyPath
-
-        if os.path.exists(keyPath):
-            return
+        print(keyPath)
+        
 
         if self.alg == 'clear':
             self._contextPasswdCreate(
                 keyringPolicy=None,
                 passwd='clear'
             )
+            print(keyPath)
             with open(keyPath, 'r') as thisFile:
                 clearKey = thisFile.read()
             return clearKey
-    
+
+        print(self.alg)
 
 ####+BEGIN: bx:icm:python:method :methodName "encrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "clearText"
     """
@@ -1374,6 +1474,36 @@ class EncryptionContext(object):
  - Decrypt the key.
  - encrypt clearText with that key.
 """
+        print("Encryping ClearText")
+        print(self.alg)
+
+        key_forsecrets = self.contextKeyGet()
+
+        print(key_forsecrets)
+
+        secret = clearText
+
+        print(secret)
+        
+        encrypted_secret = None
+        # Generate a random Nonce 12 bytes long
+        nonce = os.urandom(12)
+        aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
+        extra_associated_data = None
+        secret_bytes = secret.encode('utf-8')  # string to bytes
+        encrypted_secret = aesgcm.encrypt(nonce, secret_bytes, extra_associated_data)
+        # encrypted_secret has cipher text + a 16 byte tag appended to the end
+
+        # We will prepend the nonce and turn to hex and decode from bytes to string
+        encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
+
+        print("nonce= [" + str(binascii.hexlify(nonce)) + "]")
+        print("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
+        print("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
+
+        # store the password in the encrypted system keyring
+        #keyring.set_password(service_name, user_name, str(encrypted_secret_withnonce_hex))
+        
         return
 
 ####+BEGIN: bx:icm:python:method :methodName "decrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "cypherText"
@@ -1390,6 +1520,7 @@ class EncryptionContext(object):
  - Get key.
  - decrypt with that key
 """
+        print("Decrypting")
         return
     
 
