@@ -1717,10 +1717,11 @@ class EncryptionContext(object):
         print(cypherText)
         
         encrypted_secret = cypherText.strip()
+        #encrypted_secret = cypherText
 
         # get the bytes instead of hex string
-        #encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
-        encrypted_secret_bytes = encrypted_secret.decode('hex')
+        encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
+        #encrypted_secret_bytes = encrypted_secret.decode('hex')
 
         # we should receive 12 bytes nonce + encrypted data + 16 byte tag
         # Grab the 12 byte Nonce at the beginning
