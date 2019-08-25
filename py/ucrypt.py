@@ -381,41 +381,46 @@ class examples(icm.Cmnd):
 
         bleep.examples_icmBasic()
         
-####+BEGIN: bx:icm:python:cmnd:subSection :title "Keyring Plus"
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Generate Seed (genseed)"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Keyring Plus*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Generate Seed (genseed)*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
-        icm.cmndExampleMenuChapter('*Keyring Plus*')
-
-        cmndName = "storePlus"
+        icm.cmndExampleMenuChapter('*Generate Seed (genseed)*')
         
-        cmndArgs = ""; cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
-        menuItem()
-        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+        cmndName = "genseed"
 
-####+BEGIN: bx:icm:python:cmnd:subSection :title "User Encrypt (ucrypt)"
+        def thisBlock():
+            cps = cpsInit() ; cmndArgs = "";
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')            
+        thisBlock()
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Generate Key (genkey)"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *User Encrypt (ucrypt)*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Generate Key (genkey)*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
-        icm.cmndExampleMenuChapter('*User Encrypt (ucrypt)*')
+        icm.cmndExampleMenuChapter('*Generate Key (genkey)*')
 
         cmndName = "genkey"
 
-        cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
+        def thisBlock():
+            cps = cpsInit() ; cmndArgs = "";
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')                        
+        thisBlock()
+
+        def thisBlock():
+            cps = cpsInit() ; cmndArgs = "hex";
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
+        thisBlock()
         
-        cmndArgs = ""; menuItem()
-
-        cmndArgs = "hex"; menuItem()        
-
-        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Create Encryption Context"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Create Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Create Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
@@ -437,7 +442,7 @@ class examples(icm.Cmnd):
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Encrypt"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Encrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Encrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
@@ -475,7 +480,7 @@ class examples(icm.Cmnd):
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Decrypt"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Decrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Decrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
@@ -495,11 +500,27 @@ class examples(icm.Cmnd):
             cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = ""
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
         thisBlock()
+
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Keyring Plus"
+        """
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Keyring Plus*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        icm.cmndExampleMenuChapter('*Keyring Plus*')
+
+        cmndName = "storePlus"
+        
+        cmndArgs = ""; cps = cpsInit(); # cps['icmsPkgName'] = icmsPkgName 
+        menuItem()
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
         
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
         """
-**  [[elisp:(beginning-of-buffer)][Top]] ============== [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *Remain In Sycn With Template*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Remain In Sycn With Template*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
         
@@ -527,25 +548,26 @@ class examples(icm.Cmnd):
 ####+END:
 
 
-####+BEGIN: bx:icm:python:section :title "ICM-Commands: Symetric Encrypt"
+####+BEGIN: bx:icm:python:section :title "ICM-Commands: Common Encryption Facilities"
 """
-*  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: Symetric Encrypt*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+*  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: Common Encryption Facilities*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
-
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genkey" :comment "" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "4" :asFunc "" :interactiveP ""
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genseed" :comment "" :parsMand "" :parsOpt "type length" :argsMin "0" :argsMax "4" :asFunc "" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genkey/ parsMand= parsOpt= argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genseed/ parsMand= parsOpt=type length argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
 """
-class genkey(icm.Cmnd):
+class genseed(icm.Cmnd):
     cmndParamsMandatory = [ ]
-    cmndParamsOptional = [ ]
+    cmndParamsOptional = [ 'type', 'length', ]
     cmndArgsLen = {'Min': 0, 'Max': 4,}
 
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def cmnd(self,
         interactive=False,        # Can also be called non-interactively
+        type=None,         # or Cmnd-Input
+        length=None,         # or Cmnd-Input
         argsList=[],         # or Args-Input
     ):
         cmndOutcome = self.getOpOutcome()
@@ -556,9 +578,11 @@ class genkey(icm.Cmnd):
         else:
             effectiveArgsList = argsList
 
-        callParamsDict = {}
+        callParamsDict = {'type': type, 'length': length, }
         if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
             return cmndOutcome
+        type = callParamsDict['type']
+        length = callParamsDict['length']
 
         cmndArgsSpecDict = self.cmndArgsSpec()
         if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
@@ -661,6 +685,146 @@ class genkey(icm.Cmnd):
 ****** Use This as one-or-all choice -- context relevance
 """
 
+
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genkey" :comment "" :parsMand "" :parsOpt "passwd seed" :argsMin "0" :argsMax "4" :asFunc "" :interactiveP ""
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genkey/ parsMand= parsOpt=passwd seed argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+"""
+class genkey(icm.Cmnd):
+    cmndParamsMandatory = [ ]
+    cmndParamsOptional = [ 'passwd', 'seed', ]
+    cmndArgsLen = {'Min': 0, 'Max': 4,}
+
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmnd(self,
+        interactive=False,        # Can also be called non-interactively
+        passwd=None,         # or Cmnd-Input
+        seed=None,         # or Cmnd-Input
+        argsList=[],         # or Args-Input
+    ):
+        cmndOutcome = self.getOpOutcome()
+        if interactive:
+            if not self.cmndLineValidate(outcome=cmndOutcome):
+                return cmndOutcome
+            effectiveArgsList = G.icmRunArgsGet().cmndArgs
+        else:
+            effectiveArgsList = argsList
+
+        callParamsDict = {'passwd': passwd, 'seed': seed, }
+        if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
+            return cmndOutcome
+        passwd = callParamsDict['passwd']
+        seed = callParamsDict['seed']
+
+        cmndArgsSpecDict = self.cmndArgsSpec()
+        if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
+            return cmndOutcome
+####+END:
+        choices = self.cmndArgsGet("0&4", cmndArgsSpecDict, effectiveArgsList)
+
+        allChoices=False
+        if choices[0] == "all":
+            allChoices=True        
+            cmndArgsSpec = cmndArgsSpecDict.argPositionFind("0&4")
+            argChoices = cmndArgsSpec.argChoicesGet()
+            argChoices.pop(0)
+            choices = argChoices
+
+
+        opResult = list()
+        opError = icm.OpError.Success
+        
+        def processEachResult(eachChoice, eachResult):
+            opResult.append(eachResult)
+            if interactive:
+                separator = ""
+                choiceString = ""
+                if allChoices:
+                    separator = ":"
+                    choiceString = eachChoice
+                print("""{eachChoice}{separator}{eachResult}"""
+                      .format(eachChoice=choiceString, separator=separator, eachResult=eachResult))
+
+        # Generate an AES key, 128 bits long
+        key = AESGCM.generate_key(bit_length=128)
+        keyhex = binascii.hexlify(key)
+        
+        for eachChoice in choices:
+            if eachChoice == "hex":
+                eachResult = keyhex
+                processEachResult(eachChoice, eachResult)
+                
+            elif eachChoice == "utf-8":
+                eachResult = keyhex.decode('utf-8')
+                processEachResult(eachChoice, eachResult)
+                
+            elif eachChoice == "base64":
+                eachResult = base64.b64encode(key)
+                processEachResult(eachChoice, eachResult)
+
+            elif eachChoice == "base64url":
+                # we will also print the base64url version which uses a few different 
+                # characters so it can be used in an HTTP URL safely
+                # '+' replaced by '-' and  '/'  replaced by '_' 
+                # The padding characters == are sometime left off base64url
+
+                eachResult = base64.urlsafe_b64encode(key)
+                processEachResult(eachChoice, eachResult)
+                
+            else:
+                icm.EH_problem_usageError(
+                """Bad Choice: {eachChoice}"""
+                    .format(eachChoice=eachChoice,))
+                opError = icm.OpError.Fail
+
+                
+        return cmndOutcome.set(
+            opError=opError,
+            opResults=opResult,
+        )
+
+####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndArgsSpec/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndArgsSpec(self):
+####+END:        
+        """
+***** Cmnd Args Specification
+"""
+        cmndArgsSpecDict = icm.CmndArgsSpecDict()
+        cmndArgsSpecDict.argsDictAdd(
+            argPosition="0&4",
+            argName="choices",
+            argDefault='all',
+            argChoices=['all', 'hex', 'utf-8', 'base64', 'base64url',],
+            argDescription="Output formats.",
+        )
+
+        return cmndArgsSpecDict
+
+
+####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
+####+END:        
+        return """
+***** Generates a key in the specified output format.
+****** Use This as one-or-all choice -- context relevance
+"""
+
+
+####+BEGIN: bx:icm:python:section :title "ICM-Commands: Encryption Context"
+"""
+*  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+    
 
 ####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "createEncryptionContext" :comment "" :parsMand "context" :parsOpt "baseDir alg keyringPolicy" :argsMin "0" :argsMax "0" :asFunc "" :interactiveP ""
 """
@@ -1089,13 +1253,37 @@ class storePlus(icm.Cmnd):
 ***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
 """
 
-    
 
 ####+BEGIN: bx:icm:python:section :title "Supporting Classes And Functions"
 """
 *  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *Supporting Classes And Functions*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
+
+####+BEGIN: bx:icm:python:func :funcName "generate_seed" :funcType "anyOrNone" :retType "bool" :deco "" :argsList "type=None size=None"
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /generate_seed/ retType=bool argsList=(type=None size=None)  [[elisp:(org-cycle)][| ]]
+"""
+def generate_seed(
+    type=None,
+    size=None,
+):
+####+END:
+    pass
+
+
+####+BEGIN: bx:icm:python:func :funcName "generate_key" :funcType "anyOrNone" :retType "bool" :deco "" :argsList "passwd=None seed=None" :comment "Create a new key or based on passwd"
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /generate_key/ =Create a new key or based on passwd= retType=bool argsList=(passwd=None seed=None)  [[elisp:(org-cycle)][| ]]
+"""
+def generate_key(
+    passwd=None,
+    seed=None,
+):
+####+END:
+    pass
+
+
 
 ####+BEGIN: bx:dblock:python:class :className "EncryptionContext" :superClass "" :comment "" :classType "basic"
 """
