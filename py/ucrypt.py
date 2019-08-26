@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """\
-*    *[Summary]* :: An =ICM=: a beginning template for development of new ICMs.
+*    *[Summary]* :: An =RO-ICM=: Policy Based Encryption and Decryption.
 """
 
-####+BEGIN: bx:icm:python:top-of-file :partof "bystar" :copyleft "halaal+minimal"
+####+BEGIN: bx:icm:python:top-of-file :control "NOTYET" :partof "none" :copyleft "none"
 """
-*  This file:/bisos/git/bxRepos/unisos/bin/py/ex1.py :: [[elisp:(org-cycle)][| ]]
- is part of The Libre-Halaal ByStar Digital Ecosystem. http://www.by-star.net
- *CopyLeft*  This Software is a Libre-Halaal Poly-Existential. See http://www.freeprotocols.org
+*  This file:/bisos/git/bxRepos/unisos/bin/py/ucrypt.py :: [[elisp:(org-cycle)][| ]]
+
  A Python Interactively Command Module (PyICM).
  Best Developed With COMEEGA-Emacs And Best Used With Blee-ICM-Players.
  *WARNING*: All edits wityhin Dynamic Blocks may be lost.
@@ -19,31 +18,29 @@
 *  [[elisp:(org-cycle)][| *ICM-INFO:* |]] :: Author, Copyleft and Version Information
 """
 ####+BEGIN: bx:icm:python:name :style "fileName"
-__icmName__ = "ex1"
+__icmName__ = "ucrypt"
 ####+END:
 
 ####+BEGIN: bx:global:timestamp:version-py :style "date"
-__version__ = "201908223851"
+__version__ = "201908260325"
 ####+END:
 
-####+BEGIN: bx:global:icm:status-py :status "Production"
-__status__ = "Production"
+####+BEGIN: bx:global:icm:status-py :status "Initial"
+__status__ = "Initial"
 ####+END:
 
 __credits__ = [""]
 
-####+BEGIN: bx:dblock:global:file-insert-cond :cond "./blee.el" :file "/libre/ByStar/InitialTemplates/update/sw/icm/py/icmInfo-mbNedaGpl.py"
+####+BEGINNOT: bx:dblock:global:file-insert-cond :cond "./blee.el" :file "/libre/ByStar/InitialTemplates/update/sw/icm/py/icmInfo-mbNedaGpl.py"
 icmInfo = {
     'authors':         ["[[http://mohsen.1.banan.byname.net][Mohsen Banan]]"],
-    'copyright':       "Copyright 2017, [[http://www.neda.com][Neda Communications, Inc.]]",
     'licenses':        ["[[https://www.gnu.org/licenses/agpl-3.0.en.html][Affero GPL]]", "Libre-Halaal Services License", "Neda Commercial License"],
     'maintainers':     ["[[http://mohsen.1.banan.byname.net][Mohsen Banan]]",],
     'contacts':        ["[[http://mohsen.1.banan.byname.net/contact]]",],
-    'partOf':          ["[[http://www.by-star.net][Libre-Halaal ByStar Digital Ecosystem]]",]
 }
 ####+END:
 
-####+BEGIN: bx:icm:python:topControls :partof "bystar" :copyleft "halaal+minimal"
+####+BEGIN: bx:icm:python:topControls 
 """
 *  [[elisp:(org-cycle)][|/Controls/| ]] :: [[elisp:(org-show-subtree)][|=]]  [[elisp:(show-all)][Show-All]]  [[elisp:(org-shifttab)][Overview]]  [[elisp:(progn (org-shifttab) (org-content))][Content]] | [[file:Panel.org][Panel]] | [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] | [[elisp:(bx:org:run-me)][Run]] | [[elisp:(bx:org:run-me-eml)][RunEml]] | [[elisp:(delete-other-windows)][(1)]] | [[elisp:(progn (save-buffer) (kill-buffer))][S&Q]]  [[elisp:(save-buffer)][Save]]  [[elisp:(kill-buffer)][Quit]] [[elisp:(org-cycle)][| ]]
 ** /Version Control/ ::  [[elisp:(call-interactively (quote cvs-update))][cvs-update]]  [[elisp:(vc-update)][vc-update]] | [[elisp:(bx:org:agenda:this-file-otherWin)][Agenda-List]]  [[elisp:(bx:org:todo:this-file-otherWin)][ToDo-List]]
@@ -300,14 +297,14 @@ def g_argsExtraSpecify(
         )
 
     icmParams.parDictAdd(
-        parName='context',
-        parDescription="Encryption Context",
+        parName='policy',
+        parDescription="Encryption Policy",
         parDataType=None,
         parDefault=None,
         parChoices=[],
         parScope=icm.ICM_ParamScope.TargetParam,
         argparseShortOpt=None,
-        argparseLongOpt='--context',
+        argparseLongOpt='--policy',
         )
 
     icmParams.parDictAdd(
@@ -416,26 +413,52 @@ class examples(icm.Cmnd):
             cps = cpsInit() ; cmndArgs = "hex";
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
         thisBlock()
-        
 
-####+BEGIN: bx:icm:python:cmnd:subSection :title "Create Encryption Context"
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "List Encryption Policy"
         """
-**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Create Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *List Encryption Policy*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
 
-        icm.cmndExampleMenuSection('*createEncryptionContext*')
+        icm.cmndExampleMenuSection('*listEncryptionPolicy*')
         
-        cmndName = "createEncryptionContext"
+        cmndName = "listEncryptionPolicy"
+        def setRsrc(cps):
+            cps['rsrc'] = "policy";        
+        
+        cps = cpsInit() ; setRsrc(cps)
+        cmndArgs = ""
+        cps['baseDir'] = "~/.ucrypt" ; menuItem()        
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
-        cps = cpsInit() ; cps['context'] = "example"
+        def thisBlock():
+            cps = cpsInit() ; setRsrc(cps) 
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')            
+        thisBlock()
+         
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Create Encryption Policy"
+        """
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Create Encryption Policy*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        icm.cmndExampleMenuSection('*createEncryptionPolicy*')
+        
+        cmndName = "createEncryptionPolicy"
+        def setRsrc(cps):
+            cps['rsrc'] = "policy";        
+        
+
+        cps = cpsInit() ; setRsrc(cps) ; cps['policy'] = "example"
         cmndArgs = ""; menuItem()
 
         cps['keyringPolicy'] = "same" ; cps['baseDir'] = "~/.ucrypt" ; menuItem()        
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
         def thisBlock():
-            cps = cpsInit() ; cps['context'] = "weak"; cps['alg'] = "clear" ;
+            cps = cpsInit() ; setRsrc(cps) ; cps['policy'] = "weak"; cps['alg'] = "clear" ;
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')            
         thisBlock()
          
@@ -451,7 +474,7 @@ class examples(icm.Cmnd):
         cmndName = "encrypt"
 
         def setRsrc(cps):
-            cps['rsrc'] = "context/example";        
+            cps['rsrc'] = "policy/example";        
 
         cps = cpsInit(); setRsrc(cps)
         cmndArgs = "clearTextComesHere"; menuItem()
@@ -469,7 +492,7 @@ class examples(icm.Cmnd):
         thisBlock()
 
         def setRsrc(cps):
-            cps['rsrc'] = "context/weak";        
+            cps['rsrc'] = "policy/weak";        
 
         def thisBlock():
             icmWrapper = "echo HereComes Some ClearText | "
@@ -496,27 +519,27 @@ class examples(icm.Cmnd):
 
         def thisBlock():
             clearText = "Some Secret"
-            encryptCmnd = """ucrypt.py --rsrc="context/weak"  -i encrypt"""
+            encryptCmnd = """ucrypt.py --rsrc="policy/weak"  -i encrypt"""
             icmWrapper = """echo {clearText} | {encryptCmnd} | """.format(
                 clearText=clearText,
                 encryptCmnd=encryptCmnd,
             )
-            cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = ""
+            cps = cpsInit();  cps['rsrc'] = "policy/weak"; cmndArgs = ""
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
         thisBlock()
 
         def thisBlock():
             clearText = "Some Secret"
             encryptCmnd = """"""
-            argCmnd = """$( ucrypt.py --rsrc="context/weak"  -i encrypt "{clearText}" )""".format(
+            argCmnd = """$( ucrypt.py --rsrc="policy/weak"  -i encrypt "{clearText}" )""".format(
                 clearText=clearText,
             )
-            cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = argCmnd
+            cps = cpsInit();  cps['rsrc'] = "policy/weak"; cmndArgs = argCmnd
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
         thisBlock()
 
 
-        # ucrypt.py --rsrc="context/weak"  -i decrypt $(echo Some Secret | ucrypt.py --rsrc=context/weak  -i encrypt)        
+        # ucrypt.py --rsrc="policy/weak"  -i decrypt $(echo Some Secret | ucrypt.py --rsrc=policy/weak  -i encrypt)        
 
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Keyring Plus"
@@ -699,7 +722,7 @@ class genseed(icm.Cmnd):
 ####+END:        
         return """
 ***** Generates a key in the specified output format.
-****** Use This as one-or-all choice -- context relevance
+****** Use This as one-or-all choice -- policy relevance
 """
 
 
@@ -832,30 +855,91 @@ class genkey(icm.Cmnd):
 ####+END:        
         return """
 ***** Generates a key in the specified output format.
-****** Use This as one-or-all choice -- context relevance
+****** Use This as one-or-all choice -- policy relevance
 """
 
 
-####+BEGIN: bx:icm:python:section :title "ICM-Commands: Encryption Context"
+####+BEGIN: bx:icm:python:section :title "ICM-Commands: Encryption Policy"
 """
-*  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: Encryption Context*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+*  [[elisp:(beginning-of-buffer)][Top]] ############## [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]    *ICM-Commands: Encryption Policy*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
-    
 
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "createEncryptionContext" :comment "" :parsMand "context" :parsOpt "baseDir alg keyringPolicy" :argsMin "0" :argsMax "0" :asFunc "" :interactiveP ""
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "listEncryptionPolicy" :comment "" :parsMand "rsrc" :parsOpt "" :argsMin "0" :argsMax "0" :asFunc "" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /createEncryptionContext/ parsMand=context parsOpt=baseDir alg keyringPolicy argsMin=0 argsMax=0 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /listEncryptionPolicy/ parsMand=rsrc parsOpt= argsMin=0 argsMax=0 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
 """
-class createEncryptionContext(icm.Cmnd):
-    cmndParamsMandatory = [ 'context', ]
+class listEncryptionPolicy(icm.Cmnd):
+    cmndParamsMandatory = [ 'rsrc', ]
+    cmndParamsOptional = [ ]
+    cmndArgsLen = {'Min': 0, 'Max': 0,}
+
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmnd(self,
+        interactive=False,        # Can also be called non-interactively
+        rsrc=None,         # or Cmnd-Input
+    ):
+        cmndOutcome = self.getOpOutcome()
+        if interactive:
+            if not self.cmndLineValidate(outcome=cmndOutcome):
+                return cmndOutcome
+
+        callParamsDict = {'rsrc': rsrc, }
+        if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
+            return cmndOutcome
+        rsrc = callParamsDict['rsrc']
+
+####+END:
+        opError=icm.OpError.Success
+
+        if rsrc != "policy":
+            return  icm.EH_problem_usageError(
+                "Bad Resource={rsrc}".format(rsrc=rsrc)
+                )
+
+        #
+        # This is Temporary -- We should go to the Class and build path
+        #
+        
+        outcome = icm.subProc_bash("""\
+        ls ~/.ucrypt/policy"""
+        ).log()
+        if outcome.isProblematic(): return(icm.EH_badOutcome(outcome))
+        stdOut = outcome.stdout; stdErr = outcome.stderr; stdExit = outcome.error
+
+        print(stdOut)
+        
+        return outcome
+
+
+####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
+####+END:        
+        return """
+***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
+"""
+
+
+
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "createEncryptionPolicy" :comment "" :parsMand "rsrc policy" :parsOpt "baseDir alg keyringPolicy" :argsMin "0" :argsMax "0" :asFunc "" :interactiveP ""
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /createEncryptionPolicy/ parsMand=rsrc policy parsOpt=baseDir alg keyringPolicy argsMin=0 argsMax=0 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+"""
+class createEncryptionPolicy(icm.Cmnd):
+    cmndParamsMandatory = [ 'rsrc', 'policy', ]
     cmndParamsOptional = [ 'baseDir', 'alg', 'keyringPolicy', ]
     cmndArgsLen = {'Min': 0, 'Max': 0,}
 
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def cmnd(self,
         interactive=False,        # Can also be called non-interactively
-        context=None,         # or Cmnd-Input
+        rsrc=None,         # or Cmnd-Input
+        policy=None,         # or Cmnd-Input
         baseDir=None,         # or Cmnd-Input
         alg=None,         # or Cmnd-Input
         keyringPolicy=None,         # or Cmnd-Input
@@ -865,10 +949,11 @@ class createEncryptionContext(icm.Cmnd):
             if not self.cmndLineValidate(outcome=cmndOutcome):
                 return cmndOutcome
 
-        callParamsDict = {'context': context, 'baseDir': baseDir, 'alg': alg, 'keyringPolicy': keyringPolicy, }
+        callParamsDict = {'rsrc': rsrc, 'policy': policy, 'baseDir': baseDir, 'alg': alg, 'keyringPolicy': keyringPolicy, }
         if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
             return cmndOutcome
-        context = callParamsDict['context']
+        rsrc = callParamsDict['rsrc']
+        policy = callParamsDict['policy']
         baseDir = callParamsDict['baseDir']
         alg = callParamsDict['alg']
         keyringPolicy = callParamsDict['keyringPolicy']
@@ -876,15 +961,20 @@ class createEncryptionContext(icm.Cmnd):
 ####+END:
         opError=icm.OpError.Success
 
-        ucrypt = EncryptionContext(
-            contextDomain=context,
+        if rsrc != "policy":
+            return  icm.EH_problem_usageError(
+                "Bad Resource={rsrc}".format(rsrc=rsrc)
+                )
+        
+        ucrypt = EncryptionPolicy(
+            policyDomain=policy,
             baseDir=baseDir,
             alg=alg,
         )
 
-        opError = ucrypt._contextPasswdCreate()
+        opError = ucrypt._policyPasswdCreate()
         
-        opError = ucrypt.contextKeyCreate()
+        opError = ucrypt.policyKeyCreate()
 
         ucrypt.save()        
 
@@ -974,10 +1064,10 @@ class encrypt(icm.Cmnd):
         icm.LOG_here("""clearText={clearText}""".format(clearText=clearText))
         icm.LOG_here("""rsrc={rsrc}""".format(rsrc=rsrc))
 
-        context=os.path.basename(rsrc)
+        policy=os.path.basename(rsrc)
             
-        ucrypt = EncryptionContext(
-            contextDomain= context,
+        ucrypt = EncryptionPolicy(
+            policyDomain= policy,
         )
 
         ucrypt.load()
@@ -1092,10 +1182,10 @@ class decrypt(icm.Cmnd):
                 # Stdin then
                 cipherText = readFromStdin()
 
-        context=os.path.basename(rsrc)
+        policy=os.path.basename(rsrc)
             
-        ucrypt = EncryptionContext(
-            contextDomain= context,
+        ucrypt = EncryptionPolicy(
+            policyDomain= policy,
         )
 
         ucrypt.load()
@@ -1266,6 +1356,11 @@ class storePlus(icm.Cmnd):
 
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndDocStr" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+    """
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /cmndDocStr/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+"""
+    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
+    def cmndDocStr(self):
 ####+END:        
         return """
 ***** TODO [[elisp:(org-cycle)][| *CmndDesc:* | ]]  Place holder for this commands doc string.
@@ -1303,25 +1398,25 @@ def generate_key(
 
 
 
-####+BEGIN: bx:dblock:python:class :className "EncryptionContext" :superClass "" :comment "" :classType "basic"
+####+BEGIN: bx:dblock:python:class :className "EncryptionPolicy" :superClass "" :comment "" :classType "basic"
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Class-basic    :: /EncryptionContext/ object  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Class-basic    :: /EncryptionPolicy/ object  [[elisp:(org-cycle)][| ]]
 """
-class EncryptionContext(object):
+class EncryptionPolicy(object):
 ####+END:
     """ Doc String.
     """
 
     classVar1 = None
 
-####+BEGIN: bx:icm:python:method :methodName "__init__" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "contextDomain=None baseDir=None alg=None"
+####+BEGIN: bx:icm:python:method :methodName "__init__" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "policyDomain=None baseDir=None alg=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /__init__/ retType=bool argsList=(contextDomain=None baseDir=None alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /__init__/ retType=bool argsList=(policyDomain=None baseDir=None alg=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def __init__(
         self,
-        contextDomain=None,
+        policyDomain=None,
         baseDir=None,
         alg=None,
     ):
@@ -1332,34 +1427,34 @@ class EncryptionContext(object):
             baseDir = os.path.expanduser(baseDir)            
         
 
-        contextBaseDir = os.path.join(baseDir, "context")
+        policyBaseDir = os.path.join(baseDir, "policy")
             
         try:
-            os.makedirs(contextBaseDir)
+            os.makedirs(policyBaseDir)
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
 
-        if not contextDomain:
+        if not policyDomain:
             icm.EH_problem_usageError("")
             return
 
-        contextPath =  os.path.join(contextBaseDir, contextDomain)
+        policyPath =  os.path.join(policyBaseDir, policyDomain)
 
-        icm.LOG_here(contextPath)
+        icm.LOG_here(policyPath)
             
-        if not os.path.exists(contextPath):
-            os.makedirs(contextPath)
+        if not os.path.exists(policyPath):
+            os.makedirs(policyPath)
 
         if alg == 'clear':
-            keyPath =  os.path.join(contextPath, "clearKey")
+            keyPath =  os.path.join(policyPath, "clearKey")
         else:
-            keyPath =  os.path.join(contextPath, "encryptedKey")
+            keyPath =  os.path.join(policyPath, "encryptedKey")
 
-        pickleFile =  os.path.join(contextPath, "EncryptionContext.pickle")
+        pickleFile =  os.path.join(policyPath, "EncryptionPolicy.pickle")
             
-        self.contextPath = contextPath
-        self.contextDomain = contextDomain
+        self.policyPath = policyPath
+        self.policyDomain = policyDomain
         self.alg = alg
         self.keyPath = keyPath
         self.pickleFile = pickleFile
@@ -1390,12 +1485,12 @@ class EncryptionContext(object):
         f.close()        
 
 
-####+BEGIN: bx:icm:python:method :methodName "_contextPasswdCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyringPolicy=None passwd=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyPasswdCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyringPolicy=None passwd=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_contextPasswdCreate/ retType=bool argsList=(keyringPolicy=None passwd=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyPasswdCreate/ retType=bool argsList=(keyringPolicy=None passwd=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _contextPasswdCreate(
+    def _policyPasswdCreate(
         self,
         keyringPolicy=None,
         passwd=None,
@@ -1406,16 +1501,16 @@ class EncryptionContext(object):
  - In keyring create a passwd based on policy -- system=ucrypt
 """
 
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.contextDomain:
-            icm.EH_critical_oops("Missing {contextDomain}".format(contextDomain=self.contextDomain))
+        if not self.policyDomain:
+            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
             return
 
         service_name = "ucrypt"
-        user_name = self.contextDomain
+        user_name = self.policyDomain
 
         return 
         
@@ -1432,28 +1527,28 @@ class EncryptionContext(object):
         return
 
 
-####+BEGIN: bx:icm:python:method :methodName "_contextPasswdGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+####+BEGIN: bx:icm:python:method :methodName "_policyPasswdGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_contextPasswdGet/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyPasswdGet/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _contextPasswdGet(self):
+    def _policyPasswdGet(self):
 ####+END:        
         """ If directory and file exist do nothing. 
  - Use baseDir to create appliabilityDomain
  - In keyring create a passwd based on policy -- system=ucrypt
 """
 
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.contextDomain:
-            icm.EH_critical_oops("Missing {contextDomain}".format(contextDomain=self.contextDomain))
+        if not self.policyDomain:
+            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
             return
 
         service_name = "ucrypt"
-        user_name = self.contextDomain
+        user_name = self.policyDomain
 
         #keyringPasswd = keyring.get_password(service_name, user_name)
 
@@ -1483,29 +1578,29 @@ class EncryptionContext(object):
         """ Return a 16 byte number obtained from keyring."""
         return
 
-####+BEGIN: bx:icm:python:method :methodName "_keyForContextKeyEncryption" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+####+BEGIN: bx:icm:python:method :methodName "_keyForPolicyKeyEncryption" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_keyForContextKeyEncryption/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_keyForPolicyKeyEncryption/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _keyForContextKeyEncryption(self):
+    def _keyForPolicyKeyEncryption(self):
 ####+END:        
-        """ Get salt, get passwd, create keyForContextKeyEncryption.
+        """ Get salt, get passwd, create keyForPolicyKeyEncryption.
 """
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
 
     
-####+BEGIN: bx:icm:python:method :methodName "_contextKeyEncrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForContextKeyEncryption clearKey alg=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyKeyEncrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption clearKey alg=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_contextKeyEncrypt/ retType=bool argsList=(keyForContextKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyEncrypt/ retType=bool argsList=(keyForPolicyKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _contextKeyEncrypt(
+    def _policyKeyEncrypt(
         self,
-        keyForContextKeyEncryption,
+        keyForPolicyKeyEncryption,
         clearKey,
         alg=None,
     ):
@@ -1513,15 +1608,15 @@ class EncryptionContext(object):
         """ If directory and file exist do nothing. 
  - Use baseDir to create appliabilityDomain
  - Use genkey to create key.
- - Encrypt key with passwd of context domain
+ - Encrypt key with passwd of policy domain
  - store encrypted key
 """
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.contextDomain:
-            icm.EH_critical_oops("Missing {contextDomain}".format(contextDomain=self.contextDomain))
+        if not self.policyDomain:
+            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
             return
 
         nonce = os.urandom(12)
@@ -1543,14 +1638,14 @@ class EncryptionContext(object):
         # https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
         
 
-####+BEGIN: bx:icm:python:method :methodName "_contextKeyDecrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForContextKeyEncryption clearKey alg=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyKeyDecrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption clearKey alg=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_contextKeyDecrypt/ retType=bool argsList=(keyForContextKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyDecrypt/ retType=bool argsList=(keyForPolicyKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _contextKeyDecrypt(
+    def _policyKeyDecrypt(
         self,
-        keyForContextKeyEncryption,
+        keyForPolicyKeyEncryption,
         clearKey,
         alg=None,
     ):
@@ -1558,34 +1653,34 @@ class EncryptionContext(object):
         """ If directory and file exist do nothing. 
  - Use baseDir to create appliabilityDomain
  - Use genkey to create key.
- - Encrypt key with passwd of context domain
+ - Encrypt key with passwd of policy domain
  - store encrypted key
 """
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
         
     
-####+BEGIN: bx:icm:python:method :methodName "contextKeyCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+####+BEGIN: bx:icm:python:method :methodName "policyKeyCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /contextKeyCreate/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /policyKeyCreate/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def contextKeyCreate(self):
+    def policyKeyCreate(self):
 ####+END:        
         """ If directory and file exist do nothing. 
  - Use baseDir to create appliabilityDomain
  - Use genkey to create key.
- - Encrypt key with passwd of context domain
+ - Encrypt key with passwd of policy domain
  - store encrypted key
 """
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.contextDomain:
-            icm.EH_critical_oops("Missing {contextDomain}".format(contextDomain=self.contextDomain))
+        if not self.policyDomain:
+            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
             return
 
         keyPath = self.keyPath
@@ -1604,7 +1699,7 @@ class EncryptionContext(object):
         icm.LOG_here(clearKey)
 
         if self.alg == 'clear':
-            self._contextPasswdCreate(
+            self._policyPasswdCreate(
                 keyringPolicy=None,
                 passwd='clear'
             )
@@ -1612,13 +1707,13 @@ class EncryptionContext(object):
                 thisFile.write(clearKey)
             return
 
-        keyringPasswd = self._contextPasswdGet()
+        keyringPasswd = self._policyPasswdGet()
         
         icm.LOG_here(keyringPasswd)
 
         icm.LOG_here(clearKey)
 
-        self._keyForContextKeyEncryption()
+        self._keyForPolicyKeyEncryption()
         #encryptKey(keyringPasswd, clearKey)
 
         with open(keyPath, 'w') as thisFile:
@@ -1626,12 +1721,12 @@ class EncryptionContext(object):
 
         return
 
-####+BEGIN: bx:icm:python:method :methodName "contextKeyGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
+####+BEGIN: bx:icm:python:method :methodName "policyKeyGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /contextKeyGet/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /policyKeyGet/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def contextKeyGet(self):
+    def policyKeyGet(self):
 ####+END:        
         """ If directory and file exist do nothing. 
  - Read encryptedKey
@@ -1640,12 +1735,12 @@ class EncryptionContext(object):
  - Create Key For Decription Of Key from 
  - decode encryotedKey with keyring passwd
 """
-        if not os.path.exists(self.contextPath):
-            icm.EH_critical_oops("Missing {contextPath}".format(contextPath=self.contextPath))
+        if not os.path.exists(self.policyPath):
+            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.contextDomain:
-            icm.EH_critical_oops("Missing {contextDomain}".format(contextDomain=self.contextDomain))
+        if not self.policyDomain:
+            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
             return
 
         keyPath = self.keyPath
@@ -1653,7 +1748,7 @@ class EncryptionContext(object):
         
 
         if self.alg == 'clear':
-            self._contextPasswdCreate(
+            self._policyPasswdCreate(
                 keyringPolicy=None,
                 passwd='clear'
             )
@@ -1677,14 +1772,14 @@ class EncryptionContext(object):
     ):
 ####+END:        
         """ 
- - Make sure context exists as directory. 
+ - Make sure policy exists as directory. 
  - Get encrypted key.
  - Decrypt the key.
  - encrypt clearText with that key.
 """
         icm.LOG_here("Encryping ClearText")
 
-        key_forsecrets = self.contextKeyGet()
+        key_forsecrets = self.policyKeyGet()
 
         icm.LOG_here(key_forsecrets)
 
@@ -1729,7 +1824,7 @@ class EncryptionContext(object):
 """
         icm.LOG_here("Decrypting")
 
-        key_forsecrets = self.contextKeyGet()
+        key_forsecrets = self.policyKeyGet()
 
         icm.LOG_here(cypherText)
         
