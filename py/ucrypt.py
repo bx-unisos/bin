@@ -495,8 +495,12 @@ class examples(icm.Cmnd):
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
         def thisBlock():
-            cipherText = "7a1970f49aaaa4bc87df73fba2fc7be29df519a0b7a7c529225409cb3477330ce119b0e1850422e1c61a436d2d7990f22da729dfe1"
-            icmWrapper = """echo {cipherText} | """.format(cipherText=cipherText)
+            clearText = "Some Secret"
+            encryptCmnd = """ucrypt.py --rsrc="context/weak"  -i encrypt"""
+            icmWrapper = """echo {clearText} | {encryptCmnd} | """.format(
+                clearText=clearText,
+                encryptCmnd=encryptCmnd,
+            )
             cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = ""
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
         thisBlock()
@@ -936,11 +940,11 @@ class encrypt(icm.Cmnd):
             )
             
         def readFromFile(fileName):
-                """Reads file. Returns an email msg object.  -- Uses mutable list."""
+            """Reads file. Returns an email msg object.  -- Uses mutable list."""
                 
-                return (
-                    open(fileName, 'r').read()
-                )
+            return (
+                open(fileName, 'r').read()
+            )
         
         if not clearText:
             clearText = ""
@@ -954,9 +958,8 @@ class encrypt(icm.Cmnd):
                 # Stdin then
                 clearText = readFromStdin()
 
-        if interactive:
-            print("""clearText={clearText}""".format(clearText=clearText))
-            print("""rsrc={rsrc}""".format(rsrc=rsrc))
+        icm.LOG_here("""clearText={clearText}""".format(clearText=clearText))
+        icm.LOG_here("""rsrc={rsrc}""".format(rsrc=rsrc))
 
         context=os.path.basename(rsrc)
             
@@ -966,11 +969,14 @@ class encrypt(icm.Cmnd):
 
         ucrypt.load()
 
-        ucrypt.encrypt(clearText)        
+        cypherText = ucrypt.encrypt(clearText)
+
+        if interactive:
+            print(cypherText)
                 
         return cmndOutcome.set(
             opError=icm.OpError.Success,
-            opResults=None,
+            opResults=cypherText,
         )
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -1073,10 +1079,6 @@ class decrypt(icm.Cmnd):
                 # Stdin then
                 cipherText = readFromStdin()
 
-        if interactive:
-            print("""clearText={clearText}""".format(clearText=clearText))
-            print("""rsrc={rsrc}""".format(rsrc=rsrc))
-
         context=os.path.basename(rsrc)
             
         ucrypt = EncryptionContext(
@@ -1085,11 +1087,14 @@ class decrypt(icm.Cmnd):
 
         ucrypt.load()
 
-        ucrypt.decrypt(cipherText)        
+        clearText = ucrypt.decrypt(cipherText)
+
+        if interactive:
+            print("""{clearText}""".format(clearText=clearText))
                 
         return cmndOutcome.set(
             opError=icm.OpError.Success,
-            opResults=None,
+            opResults=clearText,
         )
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -1328,7 +1333,7 @@ class EncryptionContext(object):
 
         contextPath =  os.path.join(contextBaseDir, contextDomain)
 
-        print(contextPath)
+        icm.LOG_here(contextPath)
             
         if not os.path.exists(contextPath):
             os.makedirs(contextPath)
@@ -1409,7 +1414,7 @@ class EncryptionContext(object):
         keyring.set_password(service_name, user_name, "ucrypt-" + user_name)
         keyringPasswd = keyring.get_password(service_name, user_name)
 
-        print(keyringPasswd)
+        icm.LOG_here(keyringPasswd)
         
         return
 
@@ -1518,9 +1523,9 @@ class EncryptionContext(object):
         # We will prepend the nonce and turn to hex and decode from bytes to string
         encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
 
-        print("nonce= [" + str(binascii.hexlify(nonce)) + "]")
-        print("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
-        print("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
+        icm.LOG_here("nonce= [" + str(binascii.hexlify(nonce)) + "]")
+        icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
+        icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
         
         # https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
         
@@ -1583,7 +1588,7 @@ class EncryptionContext(object):
         results = outcome.results
         clearKey = results[0]
 
-        print(clearKey)
+        icm.LOG_here(clearKey)
 
         if self.alg == 'clear':
             self._contextPasswdCreate(
@@ -1596,9 +1601,9 @@ class EncryptionContext(object):
 
         keyringPasswd = self._contextPasswdGet()
         
-        print(keyringPasswd)
+        icm.LOG_here(keyringPasswd)
 
-        print(clearKey)
+        icm.LOG_here(clearKey)
 
         self._keyForContextKeyEncryption()
         #encryptKey(keyringPasswd, clearKey)
@@ -1631,7 +1636,7 @@ class EncryptionContext(object):
             return
 
         keyPath = self.keyPath
-        print(keyPath)
+        icm.LOG_here(keyPath)
         
 
         if self.alg == 'clear':
@@ -1639,11 +1644,11 @@ class EncryptionContext(object):
                 keyringPolicy=None,
                 passwd='clear'
             )
-            print(keyPath)
+            icm.LOG_here(keyPath)
             with open(keyPath, 'r') as thisFile:
                 clearKey = thisFile.read()
 
-        print(clearKey)                
+        icm.LOG_here(clearKey)                
         return clearKey
 
         
@@ -1664,16 +1669,15 @@ class EncryptionContext(object):
  - Decrypt the key.
  - encrypt clearText with that key.
 """
-        print("Encryping ClearText")
-        print(self.alg)
+        icm.LOG_here("Encryping ClearText")
 
         key_forsecrets = self.contextKeyGet()
 
-        print(key_forsecrets)
+        icm.LOG_here(key_forsecrets)
 
         secret = clearText
 
-        print(secret)
+        icm.LOG_here(secret)
         
         encrypted_secret = None
         # Generate a random Nonce 12 bytes long
@@ -1687,14 +1691,14 @@ class EncryptionContext(object):
         # We will prepend the nonce and turn to hex and decode from bytes to string
         encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
 
-        print("nonce= [" + str(binascii.hexlify(nonce)) + "]")
-        print("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
-        print("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
+        icm.LOG_here("nonce= [" + str(binascii.hexlify(nonce)) + "]")
+        icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
+        icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
 
         # store the password in the encrypted system keyring
         #keyring.set_password(service_name, user_name, str(encrypted_secret_withnonce_hex))
         
-        return
+        return encrypted_secret_withnonce_hex
 
 ####+BEGIN: bx:icm:python:method :methodName "decrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "cypherText"
     """
@@ -1710,11 +1714,11 @@ class EncryptionContext(object):
  - Get key.
  - decrypt with that key
 """
-        print("Decrypting")
+        icm.LOG_here("Decrypting")
 
         key_forsecrets = self.contextKeyGet()
 
-        print(cypherText)
+        icm.LOG_here(cypherText)
         
         encrypted_secret = cypherText.strip()
         #encrypted_secret = cypherText
@@ -1727,7 +1731,6 @@ class EncryptionContext(object):
         # Grab the 12 byte Nonce at the beginning
         nonce = encrypted_secret_bytes[:12]
 
-
         # Grab the the 16 byte tag at the end (but we don't need it)
         # tag = encrypted_secret_bytes[-16:]
         # if we wanted just the ciphertext
@@ -1739,9 +1742,9 @@ class EncryptionContext(object):
         aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
         secret_bytes = aesgcm.decrypt(nonce, encrypted_secret_bytes_plustag, extra_associated_data)
 
-        print(secret_bytes)
+        icm.LOG_here(secret_bytes)
         
-        return
+        return secret_bytes
     
 
     
