@@ -505,6 +505,19 @@ class examples(icm.Cmnd):
             icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none', icmWrapper=icmWrapper)
         thisBlock()
 
+        def thisBlock():
+            clearText = "Some Secret"
+            encryptCmnd = """"""
+            argCmnd = """$( ucrypt.py --rsrc="context/weak"  -i encrypt "{clearText}" )""".format(
+                clearText=clearText,
+            )
+            cps = cpsInit();  cps['rsrc'] = "context/weak"; cmndArgs = argCmnd
+            icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
+        thisBlock()
+
+
+        # ucrypt.py --rsrc="context/weak"  -i decrypt $(echo Some Secret | ucrypt.py --rsrc=context/weak  -i encrypt)        
+
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Keyring Plus"
         """
@@ -1068,7 +1081,7 @@ class decrypt(icm.Cmnd):
                 )
         
         if not cipherText:
-            clearText = ""
+            cipherText = ""
             if effectiveArgsList:
                 for each in effectiveArgsList:
                     cipherText = cipherText + each
