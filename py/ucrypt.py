@@ -954,10 +954,15 @@ class createEncryptionPolicy(icm.Cmnd):
             return  icm.EH_problem_usageError(
                 "Bad Resource={rsrc}".format(rsrc=rsrc)
                 )
+
+        if not alg:
+            alg="default"
         
         ucrypt = EncryptionPolicy(
             policy=policy,
             baseDir=baseDir,
+            keyringPolicy=keyringPolicy,
+            keyringAlg=alg,            
             alg=alg,
         )
 
@@ -1444,10 +1449,10 @@ def symDecrypt(
 
     key_forsecrets = key
 
-    icm.LOG_here(cypherText)
+    icm.LOG_here(cipherText)
         
-    encrypted_secret = cypherText.strip()
-    #encrypted_secret = cypherText
+    encrypted_secret = cipherText.strip()
+    #encrypted_secret = cipherText
 
     # get the bytes instead of hex string
     encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
