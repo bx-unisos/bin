@@ -86,6 +86,11 @@ import getpass
 import os
 import errno
 
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.backends import default_backend
+
+
 import cPickle
 
 ####+BEGIN: bx:icm:python:section :title "= =Framework::= ICM  Description (Overview) ="
@@ -594,20 +599,18 @@ class examples(icm.Cmnd):
 """
 ####+END:
 
-####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genseed" :comment "" :parsMand "" :parsOpt "type length" :argsMin "0" :argsMax "4" :asFunc "" :interactiveP ""
+####+BEGIN: bx:icm:python:cmnd:classHead :cmndName "genseed" :comment "" :parsMand "" :parsOpt "" :argsMin "0" :argsMax "1" :asFunc "" :interactiveP ""
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genseed/ parsMand= parsOpt=type length argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  ICM-Cmnd       :: /genseed/ parsMand= parsOpt= argsMin=0 argsMax=4 asFunc= interactive=  [[elisp:(org-cycle)][| ]]
 """
 class genseed(icm.Cmnd):
     cmndParamsMandatory = [ ]
-    cmndParamsOptional = [ 'type', 'length', ]
+    cmndParamsOptional = [ ]
     cmndArgsLen = {'Min': 0, 'Max': 4,}
 
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def cmnd(self,
         interactive=False,        # Can also be called non-interactively
-        type=None,         # or Cmnd-Input
-        length=None,         # or Cmnd-Input
         argsList=[],         # or Args-Input
     ):
         cmndOutcome = self.getOpOutcome()
@@ -618,22 +621,22 @@ class genseed(icm.Cmnd):
         else:
             effectiveArgsList = argsList
 
-        callParamsDict = {'type': type, 'length': length, }
+        callParamsDict = {}
         if not icm.cmndCallParamsValidate(callParamsDict, interactive, outcome=cmndOutcome):
             return cmndOutcome
-        type = callParamsDict['type']
-        length = callParamsDict['length']
 
         cmndArgsSpecDict = self.cmndArgsSpec()
         if not self.cmndArgsValidate(effectiveArgsList, cmndArgsSpecDict, outcome=cmndOutcome):
             return cmndOutcome
 ####+END:
-        choices = self.cmndArgsGet("0&4", cmndArgsSpecDict, effectiveArgsList)
+
+
+        choices = self.cmndArgsGet("0&1", cmndArgsSpecDict, effectiveArgsList)
 
         allChoices=False
         if choices[0] == "all":
             allChoices=True        
-            cmndArgsSpec = cmndArgsSpecDict.argPositionFind("0&4")
+            cmndArgsSpec = cmndArgsSpecDict.argPositionFind("0&1")
             argChoices = cmndArgsSpec.argChoicesGet()
             argChoices.pop(0)
             choices = argChoices
@@ -653,30 +656,11 @@ class genseed(icm.Cmnd):
                 print("""{eachChoice}{separator}{eachResult}"""
                       .format(eachChoice=choiceString, separator=separator, eachResult=eachResult))
 
-        # Generate an AES key, 128 bits long
-        key = AESGCM.generate_key(bit_length=128)
-        keyhex = binascii.hexlify(key)
+        salt = os.urandom(16)
         
         for eachChoice in choices:
             if eachChoice == "hex":
-                eachResult = keyhex
-                processEachResult(eachChoice, eachResult)
-                
-            elif eachChoice == "utf-8":
-                eachResult = keyhex.decode('utf-8')
-                processEachResult(eachChoice, eachResult)
-                
-            elif eachChoice == "base64":
-                eachResult = base64.b64encode(key)
-                processEachResult(eachChoice, eachResult)
-
-            elif eachChoice == "base64url":
-                # we will also print the base64url version which uses a few different 
-                # characters so it can be used in an HTTP URL safely
-                # '+' replaced by '-' and  '/'  replaced by '_' 
-                # The padding characters == are sometime left off base64url
-
-                eachResult = base64.urlsafe_b64encode(key)
+                eachResult = binascii.hexlify(bytearray(salt))
                 processEachResult(eachChoice, eachResult)
                 
             else:
@@ -685,10 +669,15 @@ class genseed(icm.Cmnd):
                     .format(eachChoice=eachChoice,))
                 opError = icm.OpError.Fail
 
+            hex_data = eachResult.decode("hex")
+
+            print(salt)
+            print(hex_data)
+
                 
         return cmndOutcome.set(
             opError=opError,
-            opResults=opResult,
+            opResults=salt,
         )
 
 ####+BEGIN: bx:icm:python:method :methodName "cmndArgsSpec" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -967,7 +956,7 @@ class createEncryptionPolicy(icm.Cmnd):
                 )
         
         ucrypt = EncryptionPolicy(
-            policyDomain=policy,
+            policy=policy,
             baseDir=baseDir,
             alg=alg,
         )
@@ -1067,7 +1056,7 @@ class encrypt(icm.Cmnd):
         policy=os.path.basename(rsrc)
             
         ucrypt = EncryptionPolicy(
-            policyDomain= policy,
+            policy= policy,
         )
 
         ucrypt.load()
@@ -1185,7 +1174,7 @@ class decrypt(icm.Cmnd):
         policy=os.path.basename(rsrc)
             
         ucrypt = EncryptionPolicy(
-            policyDomain= policy,
+            policy= policy,
         )
 
         ucrypt.load()
@@ -1404,23 +1393,33 @@ def generate_key(
 """
 class EncryptionPolicy(object):
 ####+END:
-    """ Doc String.
+    """ policyKeyCreate() creates an encrypted key. encrypt() and decrypt() use the key through policyKeyGet(). 
     """
 
-    classVar1 = None
+    saltAsHexString = "597229074e499e5442994d3643a3e7f7"   # generated with os.urandom(16)
+    salt = saltAsHexString.decode("hex")
 
-####+BEGIN: bx:icm:python:method :methodName "__init__" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "policyDomain=None baseDir=None alg=None"
+####+BEGIN: bx:icm:python:method :methodName "__init__" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "policy=None baseDir=None keyringPolicy=None keyringAlg=None alg=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /__init__/ retType=bool argsList=(policyDomain=None baseDir=None alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /__init__/ retType=bool argsList=(policy=None baseDir=None keyringPolicy=None keyringAlg=None alg=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def __init__(
         self,
-        policyDomain=None,
+        policy=None,
         baseDir=None,
+        keyringPolicy=None,
+        keyringAlg=None,
         alg=None,
     ):
 ####+END:
+        """ 
+        policy = (string) name of persistent directory.
+        baseDir = (path) alternative to ~/.ucrypt.
+        keyringPolicy = (enum) how to determine passwd that derives the key -- clear, same, prompt
+        keyringAlg = (enum) how to encrypt the key
+        alg = (enum) how to encrypt clearText
+        """
         if not baseDir:
             baseDir = os.path.expanduser("~/.ucrypt")
         else:
@@ -1435,11 +1434,11 @@ class EncryptionPolicy(object):
             if e.errno != errno.EEXIST:
                 raise
 
-        if not policyDomain:
+        if not policy:
             icm.EH_problem_usageError("")
             return
 
-        policyPath =  os.path.join(policyBaseDir, policyDomain)
+        policyPath =  os.path.join(policyBaseDir, policy)
 
         icm.LOG_here(policyPath)
             
@@ -1454,10 +1453,13 @@ class EncryptionPolicy(object):
         pickleFile =  os.path.join(policyPath, "EncryptionPolicy.pickle")
             
         self.policyPath = policyPath
-        self.policyDomain = policyDomain
+        self.policy = policy
+        self.keyringPolicy = keyringPolicy
+        self.keyringAlg = keyringAlg        
         self.alg = alg
-        self.keyPath = keyPath
-        self.pickleFile = pickleFile
+        self.keyPath = keyPath   # fullPathName of where the key resides
+        self.pickleFile = pickleFile  # fullPathName of where the pickleFile resides
+        
         
 
 ####+BEGIN: bx:icm:python:method :methodName "load" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -1485,14 +1487,13 @@ class EncryptionPolicy(object):
         f.close()        
 
 
-####+BEGIN: bx:icm:python:method :methodName "_policyPasswdCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyringPolicy=None passwd=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyPasswdCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "passwd=None"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyPasswdCreate/ retType=bool argsList=(keyringPolicy=None passwd=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyPasswdCreate/ retType=bool argsList=(passwd=None) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def _policyPasswdCreate(
         self,
-        keyringPolicy=None,
         passwd=None,
     ):
 ####+END:        
@@ -1505,12 +1506,12 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.policyDomain:
-            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
+        if not self.policy:
+            icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
         service_name = "ucrypt"
-        user_name = self.policyDomain
+        user_name = self.policy
 
         return 
         
@@ -1543,12 +1544,12 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.policyDomain:
-            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
+        if not self.policy:
+            icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
         service_name = "ucrypt"
-        user_name = self.policyDomain
+        user_name = self.policy
 
         #keyringPasswd = keyring.get_password(service_name, user_name)
 
@@ -1556,16 +1557,6 @@ class EncryptionPolicy(object):
 
 
         return keyringPasswd
-
-####+BEGIN: bx:icm:python:method :methodName "_ucryptSaltCreate" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
-    """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_ucryptSaltCreate/ retType=bool argsList=nil deco=default  [[elisp:(org-cycle)][| ]]
-"""
-    @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
-    def _ucryptSaltCreate(self):
-####+END:        
-        """ One-time-activity -- Applies to All Domains -- Return a 16 byte number obtained from keyring."""
-        return
 
     
 ####+BEGIN: bx:icm:python:method :methodName "_ucryptSaltGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
@@ -1575,8 +1566,9 @@ class EncryptionPolicy(object):
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def _ucryptSaltGet(self):
 ####+END:        
-        """ Return a 16 byte number obtained from keyring."""
-        return
+        """ Return a 16 byte number."""
+        return self.__class__.salt
+
 
 ####+BEGIN: bx:icm:python:method :methodName "_keyForPolicyKeyEncryption" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
@@ -1586,10 +1578,27 @@ class EncryptionPolicy(object):
     def _keyForPolicyKeyEncryption(self):
 ####+END:        
         """ Get salt, get passwd, create keyForPolicyKeyEncryption.
+
+ # https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
 """
-        if not os.path.exists(self.policyPath):
-            icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
-            return
+        
+        backend = default_backend()
+        
+        # Salts should be randomly generated
+        salt = self._ucryptSaltGet()
+        # derive
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+            backend=backend
+        )
+
+        passwd = self._policyPasswdGet()
+        key = kdf.derive(passwd)
+
+        return key
 
 
     
@@ -1615,8 +1624,8 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.policyDomain:
-            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
+        if not self.policy:
+            icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
         nonce = os.urandom(12)
@@ -1635,19 +1644,17 @@ class EncryptionPolicy(object):
         icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
         icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
         
-        # https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
         
 
-####+BEGIN: bx:icm:python:method :methodName "_policyKeyDecrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption clearKey alg=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyKeyDecrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption encryptedKey"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyDecrypt/ retType=bool argsList=(keyForPolicyKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyDecrypt/ retType=bool argsList=(keyForPolicyKeyEncryption encryptedKey) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def _policyKeyDecrypt(
         self,
         keyForPolicyKeyEncryption,
-        clearKey,
-        alg=None,
+        encryptedKey,
     ):
 ####+END:        
         """ If directory and file exist do nothing. 
@@ -1669,8 +1676,9 @@ class EncryptionPolicy(object):
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def policyKeyCreate(self):
 ####+END:        
-        """ If directory and file exist do nothing. 
- - Use baseDir to create appliabilityDomain
+        """ If policy directory and file exist do nothing. 
+ - Use baseDir to create policy
+ - based on 
  - Use genkey to create key.
  - Encrypt key with passwd of policy domain
  - store encrypted key
@@ -1679,8 +1687,8 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.policyDomain:
-            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
+        if not self.policy:
+            icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
         keyPath = self.keyPath
@@ -1698,28 +1706,33 @@ class EncryptionPolicy(object):
 
         icm.LOG_here(clearKey)
 
-        if self.alg == 'clear':
+        if self.keyringAlg == 'clear':
             self._policyPasswdCreate(
-                keyringPolicy=None,
                 passwd='clear'
             )
             with open(keyPath, 'w') as thisFile:
                 thisFile.write(clearKey)
             return
-
-        keyringPasswd = self._policyPasswdGet()
         
-        icm.LOG_here(keyringPasswd)
+        elif self.keyringAlg == 'default':
+            self._policyPasswdCreate()
 
-        icm.LOG_here(clearKey)
+            keyForPolicyKeyEncryption = self._keyForPolicyKeyEncryption()
 
-        self._keyForPolicyKeyEncryption()
-        #encryptKey(keyringPasswd, clearKey)
+            encryptedKey = self._policyKeyEncrypt(
+                keyForPolicyKeyEncryption,
+                clearKey,
+            )
+            with open(keyPath, 'w') as thisFile:
+                thisFile.write(encryptedKey)
 
-        with open(keyPath, 'w') as thisFile:
-            thisFile.write(clearKey)
+            return
+        
+        else:
+            return (
+                icm.EH_problem_usageError("bad keyringAlg={}".format(self.keyringAlg))
+            )
 
-        return
 
 ####+BEGIN: bx:icm:python:method :methodName "policyKeyGet" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList ""
     """
@@ -1739,25 +1752,38 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policyPath}".format(policyPath=self.policyPath))
             return
 
-        if not self.policyDomain:
-            icm.EH_critical_oops("Missing {policyDomain}".format(policyDomain=self.policyDomain))
+        if not self.policy:
+            icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
         keyPath = self.keyPath
         icm.LOG_here(keyPath)
         
 
-        if self.alg == 'clear':
-            self._policyPasswdCreate(
-                keyringPolicy=None,
-                passwd='clear'
-            )
-            icm.LOG_here(keyPath)
+        if self.keyringAlg == 'clear':
             with open(keyPath, 'r') as thisFile:
                 clearKey = thisFile.read()
+            icm.LOG_here(clearKey)                
+            return clearKey
 
-        icm.LOG_here(clearKey)                
-        return clearKey
+        elif self.keyringAlg == 'default':
+            with open(keyPath, 'r') as thisFile:
+                encryptedKey = thisFile.read()
+            icm.LOG_here(encryptedKey)
+
+            keyForPolicyKeyEncryption = self._keyForPolicyKeyEncryption()
+
+            clearKey = self._policyKeyDecrypt(
+                keyForPolicyKeyEncryption,
+                encryptedKey,
+            )
+            
+            return clearKey
+
+        else:
+            return (
+                icm.EH_problem_usageError("bad keyringAlg={}".format(self.keyringAlg))
+            )
 
         
 
