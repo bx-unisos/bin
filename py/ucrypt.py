@@ -656,7 +656,7 @@ class genseed(icm.Cmnd):
                 print("""{eachChoice}{separator}{eachResult}"""
                       .format(eachChoice=choiceString, separator=separator, eachResult=eachResult))
 
-        salt = os.urandom(16)
+        salt = generate_seed()
         
         for eachChoice in choices:
             if eachChoice == "hex":
@@ -673,7 +673,6 @@ class genseed(icm.Cmnd):
 
             print(salt)
             print(hex_data)
-
                 
         return cmndOutcome.set(
             opError=opError,
@@ -775,8 +774,7 @@ class genkey(icm.Cmnd):
                 print("""{eachChoice}{separator}{eachResult}"""
                       .format(eachChoice=choiceString, separator=separator, eachResult=eachResult))
 
-        # Generate an AES key, 128 bits long
-        key = AESGCM.generate_key(bit_length=128)
+        key = generate_key()
         keyhex = binascii.hexlify(key)
         
         for eachChoice in choices:
@@ -966,8 +964,6 @@ class createEncryptionPolicy(icm.Cmnd):
             alg=alg,
         )
 
-        opError = ucrypt._policyPasswdCreate()
-        
         opError = ucrypt.policyKeyCreate()
 
         ucrypt.save()        
@@ -1376,35 +1372,55 @@ def generate_seed(
     size=None,
 ):
 ####+END:
-    pass
+
+    return (
+        os.urandom(16)
+        )
 
 
-####+BEGIN: bx:icm:python:func :funcName "generate_key" :funcType "anyOrNone" :retType "bool" :deco "" :argsList "passwd=None seed=None" :comment "Create a new key or based on passwd"
+####+BEGIN: bx:icm:python:func :funcName "generate_key" :funcType "anyOrNone" :retType "bool" :deco "" :argsList "passwd=None salt=None" :comment "Create a new key or based on passwd"
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /generate_key/ =Create a new key or based on passwd= retType=bool argsList=(passwd=None seed=None)  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /generate_key/ =Create a new key or based on passwd= retType=bool argsList=(passwd=None salt=None)  [[elisp:(org-cycle)][| ]]
 """
 def generate_key(
     passwd=None,
-    seed=None,
+    salt=None,
 ):
 ####+END:
-    pass
+    """  Generate an AES key, 128 bits long """
+
+    if not passwd:
+        key = AESGCM.generate_key(bit_length=128)
+    else:
+        backend = default_backend()
+
+        # derive
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=salt,
+            iterations=100000,
+            backend=backend
+        )
+
+        key = kdf.derive(passwd)
+
+    return key
 
 
-
-####+BEGIN: bx:icm:python:func :funcName "symEncrypt" :funcType "anyOrNone" :retType "cipherText" :deco "" :argsList "algorithm key clearText" :comment "Symetric Encryption"
+####+BEGIN: bx:icm:python:func :funcName "symEncrypt" :funcType "anyOrNone" :retType "cipherText" :deco "" :argsList "algorithm hexkey clearText" :comment "Symetric Encryption"
 """
-*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /symEncrypt/ =Symetric Encryption= retType=cipherText argsList=(algorithm key clearText)  [[elisp:(org-cycle)][| ]]
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /symEncrypt/ =Symetric Encryption= retType=cipherText argsList=(algorithm hexkey clearText)  [[elisp:(org-cycle)][| ]]
 """
 def symEncrypt(
     algorithm,
-    key,
+    hexkey,
     clearText,
 ):
 ####+END:
     icm.LOG_here("Encryping ClearText -- Algorithm={}".format(algorithm))
 
-    key_forsecrets = key
+    key_forsecrets = hexkey
 
     icm.LOG_here(key_forsecrets)
 
@@ -1605,6 +1621,8 @@ class EncryptionPolicy(object):
         service_name = "ucrypt"
         user_name = self.policy
 
+        # NOTYET need to case based on keyring policy
+
         return 
         
         keyringPasswd = keyring.get_password(service_name, user_name)
@@ -1672,38 +1690,30 @@ class EncryptionPolicy(object):
         """ Get salt, get passwd, create keyForPolicyKeyEncryption.
 
  # https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
-"""
-        
-        backend = default_backend()
-        
-        # Salts should be randomly generated
-        salt = self._ucryptSaltGet()
-        # derive
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
-            iterations=100000,
-            backend=backend
-        )
 
+"""
+
+        salt = self._ucryptSaltGet()
+        
         passwd = self._policyPasswdGet()
-        key = kdf.derive(passwd)
+
+        key = generate_key(
+            passwd=passwd,
+            salt=salt,
+            )
 
         return key
 
-
     
-####+BEGIN: bx:icm:python:method :methodName "_policyKeyEncrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption clearKey alg=None"
+####+BEGIN: bx:icm:python:method :methodName "_policyKeyEncrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption clearKey"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyEncrypt/ retType=bool argsList=(keyForPolicyKeyEncryption clearKey alg=None) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /_policyKeyEncrypt/ retType=bool argsList=(keyForPolicyKeyEncryption clearKey) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def _policyKeyEncrypt(
         self,
         keyForPolicyKeyEncryption,
         clearKey,
-        alg=None,
     ):
 ####+END:        
         """ If directory and file exist do nothing. 
@@ -1720,23 +1730,13 @@ class EncryptionPolicy(object):
             icm.EH_critical_oops("Missing {policy}".format(policy=self.policy))
             return
 
-        nonce = os.urandom(12)
+        cipherText = symEncrypt(
+            self.keyringAlg,
+            binascii.hexlify(keyForPolicyKeyEncryption),
+            clearKey,
+        )
 
-        #aesgcm = AESGCM(binascii.unhexlify(encryptionKey))
-        aesgcm = AESGCM(encryptionKey)        
-        extra_associated_data = None
-        secret_bytes = clearKey.encode('utf-8')  # string to bytes
-        encrypted_secret = aesgcm.encrypt(nonce, secret_bytes, extra_associated_data)
-        # encrypted_secret has cipher text + a 16 byte tag appended to the end
-
-        # We will prepend the nonce and turn to hex and decode from bytes to string
-        encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
-
-        icm.LOG_here("nonce= [" + str(binascii.hexlify(nonce)) + "]")
-        icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
-        icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
-        
-        
+        return cipherText
 
 ####+BEGIN: bx:icm:python:method :methodName "_policyKeyDecrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "keyForPolicyKeyEncryption encryptedKey"
     """
@@ -1898,7 +1898,7 @@ class EncryptionPolicy(object):
         return (
             symEncrypt(
                 self.alg,
-                self.policyKeyGet(),
+                binascii.hexlify(self.policyKeyGet()),
                 clearText,
             )
         )
