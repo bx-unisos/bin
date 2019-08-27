@@ -1387,6 +1387,93 @@ def generate_key(
 
 
 
+####+BEGIN: bx:icm:python:func :funcName "symEncrypt" :funcType "anyOrNone" :retType "cipherText" :deco "" :argsList "algorithm key clearText" :comment "Symetric Encryption"
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /symEncrypt/ =Symetric Encryption= retType=cipherText argsList=(algorithm key clearText)  [[elisp:(org-cycle)][| ]]
+"""
+def symEncrypt(
+    algorithm,
+    key,
+    clearText,
+):
+####+END:
+    icm.LOG_here("Encryping ClearText -- Algorithm={}".format(algorithm))
+
+    key_forsecrets = key
+
+    icm.LOG_here(key_forsecrets)
+
+    secret = clearText
+
+    icm.LOG_here(secret)
+        
+    encrypted_secret = None
+    # Generate a random Nonce 12 bytes long
+    nonce = os.urandom(12)
+    aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
+    extra_associated_data = None
+    secret_bytes = secret.encode('utf-8')  # string to bytes
+    encrypted_secret = aesgcm.encrypt(nonce, secret_bytes, extra_associated_data)
+    # encrypted_secret has cipher text + a 16 byte tag appended to the end
+
+    # We will prepend the nonce and turn to hex and decode from bytes to string
+    encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
+
+    icm.LOG_here("nonce= [" + str(binascii.hexlify(nonce)) + "]")
+    icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
+    icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
+
+    # store the password in the encrypted system keyring
+    #keyring.set_password(service_name, user_name, str(encrypted_secret_withnonce_hex))
+        
+    return encrypted_secret_withnonce_hex
+
+
+
+####+BEGIN: bx:icm:python:func :funcName "symDecrypt" :funcType "anyOrNone" :retType "clearText" :deco "" :argsList "algorithm key cipherText" :comment "Symetric Encryption"
+"""
+*  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Func-anyOrNone :: /symDecrypt/ =Symetric Encryption= retType=clearText argsList=(algorithm key cipherText)  [[elisp:(org-cycle)][| ]]
+"""
+def symDecrypt(
+    algorithm,
+    key,
+    cipherText,
+):
+####+END:
+    icm.LOG_here("Decrypting -- Algorithm={}".format(algorithm))
+
+    key_forsecrets = key
+
+    icm.LOG_here(cypherText)
+        
+    encrypted_secret = cypherText.strip()
+    #encrypted_secret = cypherText
+
+    # get the bytes instead of hex string
+    encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
+    #encrypted_secret_bytes = encrypted_secret.decode('hex')
+
+    # we should receive 12 bytes nonce + encrypted data + 16 byte tag
+    # Grab the 12 byte Nonce at the beginning
+    nonce = encrypted_secret_bytes[:12]
+
+    # Grab the the 16 byte tag at the end (but we don't need it)
+    # tag = encrypted_secret_bytes[-16:]
+    # if we wanted just the ciphertext
+    # just_ciphertext = encrypted_secret_bytes[12:-16]
+
+    # skip the first 12 bytes where the Nonce is
+    encrypted_secret_bytes_plustag = encrypted_secret_bytes[12:]
+    extra_associated_data = None
+    aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
+    secret_bytes = aesgcm.decrypt(nonce, encrypted_secret_bytes_plustag, extra_associated_data)
+
+    icm.LOG_here(secret_bytes)
+        
+    return secret_bytes
+
+
+
 ####+BEGIN: bx:dblock:python:class :className "EncryptionPolicy" :superClass "" :comment "" :classType "basic"
 """
 *  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Class-basic    :: /EncryptionPolicy/ object  [[elisp:(org-cycle)][| ]]
@@ -1803,83 +1890,36 @@ class EncryptionPolicy(object):
  - Decrypt the key.
  - encrypt clearText with that key.
 """
-        icm.LOG_here("Encryping ClearText")
+        return (
+            symEncrypt(
+                self.alg,
+                self.policyKeyGet(),
+                clearText,
+            )
+        )
 
-        key_forsecrets = self.policyKeyGet()
-
-        icm.LOG_here(key_forsecrets)
-
-        secret = clearText
-
-        icm.LOG_here(secret)
-        
-        encrypted_secret = None
-        # Generate a random Nonce 12 bytes long
-        nonce = os.urandom(12)
-        aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
-        extra_associated_data = None
-        secret_bytes = secret.encode('utf-8')  # string to bytes
-        encrypted_secret = aesgcm.encrypt(nonce, secret_bytes, extra_associated_data)
-        # encrypted_secret has cipher text + a 16 byte tag appended to the end
-
-        # We will prepend the nonce and turn to hex and decode from bytes to string
-        encrypted_secret_withnonce_hex = binascii.hexlify(nonce + encrypted_secret).decode('utf-8')
-
-        icm.LOG_here("nonce= [" + str(binascii.hexlify(nonce)) + "]")
-        icm.LOG_here("encrypted_secret= [" + str(binascii.hexlify(encrypted_secret)) + "]")
-        icm.LOG_here("encrypted_secret_withnonce_hex= [" + encrypted_secret_withnonce_hex + "]")
-
-        # store the password in the encrypted system keyring
-        #keyring.set_password(service_name, user_name, str(encrypted_secret_withnonce_hex))
-        
-        return encrypted_secret_withnonce_hex
-
-####+BEGIN: bx:icm:python:method :methodName "decrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "cypherText"
+    
+####+BEGIN: bx:icm:python:method :methodName "decrypt" :methodType "anyOrNone" :retType "bool" :deco "default" :argsList "cipherText"
     """
-**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /decrypt/ retType=bool argsList=(cypherText) deco=default  [[elisp:(org-cycle)][| ]]
+**  [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]  Method-anyOrNone :: /decrypt/ retType=bool argsList=(cipherText) deco=default  [[elisp:(org-cycle)][| ]]
 """
     @icm.subjectToTracking(fnLoc=True, fnEntry=True, fnExit=True)
     def decrypt(
         self,
-        cypherText,
+        cipherText,
     ):
 ####+END:        
         """ If directory and file exist do nothing. 
  - Get key.
  - decrypt with that key
 """
-        icm.LOG_here("Decrypting")
-
-        key_forsecrets = self.policyKeyGet()
-
-        icm.LOG_here(cypherText)
-        
-        encrypted_secret = cypherText.strip()
-        #encrypted_secret = cypherText
-
-        # get the bytes instead of hex string
-        encrypted_secret_bytes = binascii.unhexlify(encrypted_secret)
-        #encrypted_secret_bytes = encrypted_secret.decode('hex')
-
-        # we should receive 12 bytes nonce + encrypted data + 16 byte tag
-        # Grab the 12 byte Nonce at the beginning
-        nonce = encrypted_secret_bytes[:12]
-
-        # Grab the the 16 byte tag at the end (but we don't need it)
-        # tag = encrypted_secret_bytes[-16:]
-        # if we wanted just the ciphertext
-        # just_ciphertext = encrypted_secret_bytes[12:-16]
-
-        # skip the first 12 bytes where the Nonce is
-        encrypted_secret_bytes_plustag = encrypted_secret_bytes[12:]
-        extra_associated_data = None
-        aesgcm = AESGCM(binascii.unhexlify(key_forsecrets))
-        secret_bytes = aesgcm.decrypt(nonce, encrypted_secret_bytes_plustag, extra_associated_data)
-
-        icm.LOG_here(secret_bytes)
-        
-        return secret_bytes
-    
+        return (
+            symDecrypt(
+                self.alg,
+                self.policyKeyGet(),
+                cipherText,
+            )
+        )
 
     
 ####+BEGIN: bx:icm:python:section :title "Common/Generic Facilities -- Library Candidates"
