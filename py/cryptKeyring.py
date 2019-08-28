@@ -104,7 +104,7 @@ from cryptography.hazmat.backends import default_backend
 
 import cPickle
 
-import symEncrypt
+import symCrypt
 
 ####+BEGIN: bx:dblock:python:section :title "Library Description (Overview)"
 """

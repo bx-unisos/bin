@@ -90,7 +90,7 @@ from cryptography.hazmat.backends import default_backend
 
 import cPickle
 
-import symEncryptLib
+import symCrypt
 
 import cryptKeyring
 
