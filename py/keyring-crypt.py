@@ -69,9 +69,6 @@ from unisos import icm
 
 from blee.icmPlayer import bleep
 
-g_importedCmnds = {        # Enumerate modules from which CMNDs become invokable
-    'bleep': bleep.__file__,
-}
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import binascii
@@ -94,6 +91,14 @@ from cryptography.hazmat.backends import default_backend
 import cPickle
 
 import symEncryptLib
+
+import cryptKeyring
+
+g_importedCmnds = {        # Enumerate modules from which CMNDs become invokable
+    'bleep': bleep.__file__,
+    'cryptKeyring': cryptKeyring.__file__,
+}
+
 
 ####+BEGIN: bx:icm:python:section :title "= =Framework::= ICM  Description (Overview) ="
 """
@@ -338,7 +343,9 @@ def g_argsExtraSpecify(
     
 
     
-    bleep.commonParamsSpecify(icmParams)    
+    bleep.commonParamsSpecify(icmParams)
+
+    cryptKeyring.commonParamsSpecify(icmParams)
        
     icm.argsparseBasedOnIcmParams(parser, icmParams)
 
@@ -400,6 +407,14 @@ class examples(icm.Cmnd):
         menuItem()
         icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
+
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Imported: cryptKeyring Examples"
+        """
+**  [[elisp:(beginning-of-buffer)][Top]] ================ [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *withVenv Run PIP Commands*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        cryptKeyring.examples_libModuleCmnds()
         
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
