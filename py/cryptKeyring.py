@@ -318,6 +318,24 @@ def examples_libModuleCmnds():
     def execLineEx(cmndStr): icm.ex_gExecMenuItem(execLine=cmndStr)
 
 
+####+BEGIN: bx:icm:python:cmnd:subSection :context "func-1" :title "Prepare Crypto Keyring"
+    """
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Prepare Crypto Keyring*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+    icm.cmndExampleMenuChapter('*Prepare Crypto Keyring*')
+
+    cmndName = "prepare"
+
+    def thisBlock():
+        cmndArgs = "";
+        cps = cpsInit();  cps['rsrc'] = 'system/sysEx1/userEx1';  cps['system'] = 'sysEx1'; cps['user'] = 'userEx1';
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='none')
+        icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')                        
+    thisBlock()
+
+
 ####+BEGIN: bx:icm:python:cmnd:subSection :context "func-1" :title "Set Password In Crypto Keyring"
     """
 **   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Set Password In Crypto Keyring*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
@@ -351,6 +369,22 @@ def examples_libModuleCmnds():
     icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
 
 
+####+BEGIN: bx:icm:python:cmnd:subSection :context "func-1" :context "func-1" :title "Delete Password From Crypto Keyring"
+    """
+**   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Delete Password From Crypto Keyring*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+    icm.cmndExampleMenuChapter('*Delete Password From Crypto Keyring*')
+
+    cmndName = "passwdDelete"
+
+    cmndArgs = ""; cps = cpsInit();  cps['rsrc'] = 'system/sysEx1/userEx1';  cps['system'] = 'sysEx1'; cps['user'] = 'userEx1';
+    menuItem(verbosity='none')
+    icm.ex_gCmndMenuItem(cmndName, cps, cmndArgs, verbosity='full')        
+
+
+    
         
 ####+BEGIN: bx:icm:python:cmnd:subSection :context "func-1" :title "Remain In Sycn With Template"
     """
@@ -358,14 +392,16 @@ def examples_libModuleCmnds():
 """
 ####+END:
         
-    icm.cmndExampleMenuChapter('*Remain In Sycn With Template*')
+    def thisBlock():
+        icm.cmndExampleMenuChapter('*Remain In Sycn With Template*')
 
-    templateFile = "/bisos/git/bxRepos/bisos-pip/examples/dev/bisos/examples/icmLibPkgBegin.py"
-    thisFile = __file__
+        templateFile = "/bisos/git/bxRepos/bisos-pip/examples/dev/bisos/examples/icmLibPkgBegin.py"
+        thisFile = __file__
 
-    execLineEx("""diff {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
-    execLineEx("""cp {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
-    execLineEx("""cp {templateFile} {thisFile}""".format(thisFile=thisFile, templateFile=templateFile))                
+        execLineEx("""diff {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
+        execLineEx("""cp {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
+        execLineEx("""cp {templateFile} {thisFile}""".format(thisFile=thisFile, templateFile=templateFile))                
+    #thisBlock()
 
     return
 

@@ -69,9 +69,6 @@ from unisos import icm
 
 from blee.icmPlayer import bleep
 
-g_importedCmnds = {        # Enumerate modules from which CMNDs become invokable
-    'bleep': bleep.__file__,
-}
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import binascii
@@ -92,6 +89,14 @@ from cryptography.hazmat.backends import default_backend
 
 
 import cPickle
+
+import symCrypt
+
+g_importedCmnds = {        # Enumerate modules from which CMNDs become invokable
+    'bleep': bleep.__file__,
+    'symCrypt': symCrypt.__file__,    
+}
+
 
 ####+BEGIN: bx:icm:python:section :title "= =Framework::= ICM  Description (Overview) ="
 """
@@ -267,76 +272,10 @@ def g_argsExtraSpecify(
         argparseShortOpt=None,
         argparseLongOpt='--version',
     )
-
-    icmParams.parDictAdd(
-        parName='rsrc',
-        parDescription="Resource",
-        parDataType=None,
-        parDefault=None,
-        parChoices=["someResource", "UserInput"],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--rsrc',
-        )
     
-    icmParams.parDictAdd(
-        parName='inFile',
-        parDescription="Input File",
-        parDataType=None,
-        parDefault=None,
-        parChoices=["someFile", "UserInput"],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--inFile',
-        )
+    bleep.commonParamsSpecify(icmParams)
 
-    icmParams.parDictAdd(
-        parName='baseDir',
-        parDescription="Base Directory Name",
-        parDataType=None,
-        parDefault=None,
-        parChoices=[],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--baseDir',
-        )
-
-    icmParams.parDictAdd(
-        parName='policy',
-        parDescription="Encryption Policy",
-        parDataType=None,
-        parDefault=None,
-        parChoices=[],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--policy',
-        )
-
-    icmParams.parDictAdd(
-        parName='keyringPolicy',
-        parDescription="Policy For Setting Passwd In Keyring",
-        parDataType=None,
-        parDefault=None,
-        parChoices=['prompt', 'default',],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--keyringPolicy',
-        )
-
-    icmParams.parDictAdd(
-        parName='alg',
-        parDescription="Symetric Encryption Algorithem",
-        parDataType=None,
-        parDefault=None,
-        parChoices=['default', 'someAlg',],
-        parScope=icm.ICM_ParamScope.TargetParam,
-        argparseShortOpt=None,
-        argparseLongOpt='--alg',
-        )
-    
-
-    
-    bleep.commonParamsSpecify(icmParams)    
+    symCrypt.commonParamsSpecify(icmParams)      
        
     icm.argsparseBasedOnIcmParams(parser, icmParams)
 
@@ -375,7 +314,7 @@ class examples(icm.Cmnd):
         def execLineEx(cmndStr): icm.ex_gExecMenuItem(execLine=cmndStr)
 
         logControler = icm.LOG_Control()
-        logControler.loggerSetLevel(20)
+        #logControler.loggerSetLevel(20)
         
         icm.icmExampleMyName(G.icmMyName(), G.icmMyFullName())
         
@@ -383,6 +322,15 @@ class examples(icm.Cmnd):
 
         bleep.examples_icmBasic()
         
+####+BEGIN: bx:icm:python:cmnd:subSection :title "Imported: symCrypt Examples"
+        """
+**  [[elisp:(beginning-of-buffer)][Top]] ================ [[elisp:(blee:ppmm:org-mode-toggle)][Nat]] [[elisp:(delete-other-windows)][(1)]]          *withVenv Run PIP Commands*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
+"""
+####+END:
+
+        symCrypt.examples_libModuleCmnds()
+        
+
         
 
 ####+BEGIN: bx:icm:python:cmnd:subSection :title "Remain In Sycn With Template"
@@ -390,16 +338,18 @@ class examples(icm.Cmnd):
 **   [[elisp:(org-cycle)][| ]] [[elisp:(org-show-subtree)][|=]] [[elisp:(show-children 10)][|V]] [[elisp:(bx:orgm:indirectBufOther)][|>]] [[elisp:(bx:orgm:indirectBufMain)][|I]] [[elisp:(blee:ppmm:org-mode-toggle)][|N]] [[elisp:(org-top-overview)][|O]] [[elisp:(progn (org-shifttab) (org-content))][|C]] [[elisp:(delete-other-windows)][|1]]          *Remain In Sycn With Template*  [[elisp:(org-cycle)][| ]]  [[elisp:(org-show-subtree)][|=]] 
 """
 ####+END:
-        
-        icm.cmndExampleMenuChapter('*Remain In Sycn With Template*')
 
-        #templateFile = "/de/bx/nne/dev-py/pypi/pkgs/bisos/examples/dev/bin/icmBegin.py"
-        templateFile = "/de/bx/nne/dev-py/pypi/pkgs/unisos/icmExamples/dev/bin/icmBegin.py"
-        thisFile = __file__
+        def thisBlock():
+            icm.cmndExampleMenuChapter('*Remain In Sycn With Template*')
 
-        execLineEx("""diff {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
-        execLineEx("""cp {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
-        execLineEx("""cp {templateFile} {thisFile}""".format(thisFile=thisFile, templateFile=templateFile))                
+            templateFile = "/bisos/git/bxRepos/bisos-pip/examples/dev/bisos/examples/icmLibPkgBegin.py"
+            thisFile = __file__
+
+            execLineEx("""diff {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
+            execLineEx("""cp {thisFile} {templateFile}""".format(thisFile=thisFile, templateFile=templateFile))
+            execLineEx("""cp {templateFile} {thisFile}""".format(thisFile=thisFile, templateFile=templateFile))                
+        #thisBlock()
+
 
         return(cmndOutcome)
 
