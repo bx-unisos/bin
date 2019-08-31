@@ -1566,6 +1566,7 @@ class EncryptionPolicy(object):
         
         return keyringPasswd
 
+    
 
 ####+BEGIN: bx:icm:python:method :methodName "_policyPasswdGet" :methodType "anyOrNone" :retType "passwd string" :deco "default" :argsList ""
     """
